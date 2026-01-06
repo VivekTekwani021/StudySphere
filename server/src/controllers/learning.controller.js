@@ -19,16 +19,16 @@ exports.getLearningContent = async (req, res) => {
       level: user.educationLevel
     });
 
-    const videos = await getYouTubeVideos(topic);
+   // const videos = await getYouTubeVideos(topic);
 
-    res.status(200).json({
+     return res.status(200).json({
       success: true,
       topic,
       explanation,
-      videos
+      
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
   }
 };
 

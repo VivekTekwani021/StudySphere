@@ -16,6 +16,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/onboarding", onboardingRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/learning", learningRoutes);
+app.use("/api/quiz", require("./routes/quiz.routes"));
+app.use("/api/pdf", require("./routes/pdf.routes"));
+
 
 
 app.get("/", (req, res) => {
