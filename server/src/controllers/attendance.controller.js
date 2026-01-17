@@ -1,153 +1,350 @@
+// const Attendance = require("../models/Attendance.model");
+// const {
+//   calculatePercentage,
+//   calculateStatus
+// } = require("../utils/calculateAttendance");
+
+
+// const sameDate = (d1, d2) =>
+//   new Date(d1).toDateString() === new Date(d2).toDateString();
+
+// // ================= SCHOOL =================
+// exports.markSchoolAttendance = async (req, res) => {
+//   try {
+//     const { isPresent, date } = req.body;
+//     let userattend = await Attendance.findOne({ user: req.user._id });
+//     const targetDate = new Date(date);
+//     if (!userattend) {
+//       userattend = await Attendance.create({
+//         user: req.user._id,
+//         totalClasses: 0,
+//         attendedClasses: 0,
+//         streak: 0,
+//         presentDates: [],
+//         absentDates: []
+//       });
+
+//     }
+//     const presentIndex = userattend.presentDates.findIndex(d =>
+//       sameDate(d, targetDate)
+//     );
+
+//     const absentIndex = userattend.absentDates.findIndex(d =>
+//       sameDate(d, targetDate)
+//     );
+
+//     if (presentIndex !== -1) {
+//       if (!isPresent) {
+//         userattend.presentDates.splice(presentIndex, 1);
+//         userattend.absentDates.push(targetDate);
+//         userattend.attendedClasses -= 1;
+//         userattend.streak = 0;
+//       }
+//     }
+
+//     // ---------------- CASE 2: Already ABSENT ----------------
+//     else if (absentIndex !== -1) {
+//       if (isPresent) {
+//         userattend.absentDates.splice(absentIndex, 1);
+//         userattend.presentDates.push(targetDate);
+//         userattend.attendedClasses += 1;
+//         userattend.streak += 1;
+//       }
+//     }
+//     else {
+
+//       userattend.totalClasses += 1;
+
+//       if (isPresent) {
+//         userattend.presentDates.push(targetDate);
+//         userattend.attendedClasses += 1;
+//         userattend.streak += 1;
+//       } else {
+//         userattend.absentDates.push(targetDate);
+//         userattend.streak = 0;
+//       }
+//     }
+//     await userattend.save();
+
+//     res.status(200).json({
+//       message: "Attendance updated successfully",
+//       attendance: userattend
+//     });
+
+
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+
+// // ================= COLLEGE =================
+// exports.markSubjectAttendance = async (req, res) => {
+//   try {
+//     const { subjectName, isPresent, date } = req.body;
+//     const targetDate = new Date(date);
+
+//     let attendance = await Attendance.findOne({ user: req.user._id });
+
+//     if (!attendance) {
+//       attendance = await Attendance.create({
+//         user: req.user._id,
+//         subjects: []
+//       });
+//     }
+
+//     let subject = attendance.subjects.find(
+//       (s) => s.subjectName === subjectName
+//     );
+
+//     if (!subject) {
+//       subject = {
+//         subjectName,
+//         totalClasses: 0,
+//         attendedClasses: 0,
+//         streak: 0,
+//         presentDates: [],
+//         absentDates: []
+//       };
+//       attendance.subjects.push(subject);
+//     }
+
+//     // ensure arrays exist
+//     subject.presentDates ||= [];
+//     subject.absentDates ||= [];
+
+//     const presentIndex = subject.presentDates.findIndex(d =>
+//       sameDate(d, targetDate)
+//     );
+
+//     const absentIndex = subject.absentDates.findIndex(d =>
+//       sameDate(d, targetDate)
+//     );
+
+//     // -------- CASE 1: already PRESENT --------
+//     if (presentIndex !== -1) {
+//       if (!isPresent) {
+//         subject.presentDates.splice(presentIndex, 1);
+//         subject.absentDates.push(targetDate);
+//         subject.attendedClasses -= 1;
+//         subject.streak = 0;
+//       }
+//     }
+
+//     // -------- CASE 2: already ABSENT --------
+//     else if (absentIndex !== -1) {
+//       if (isPresent) {
+//         subject.absentDates.splice(absentIndex, 1);
+//         subject.presentDates.push(targetDate);
+//         subject.attendedClasses += 1;
+//         subject.streak += 1;
+//       }
+//     }
+
+//     // -------- CASE 3: NEW DATE --------
+//     else {
+//       subject.totalClasses += 1;
+
+//       if (isPresent) {
+//         subject.presentDates.push(targetDate);
+//         subject.attendedClasses += 1;
+//         subject.streak += 1;
+//       } else {
+//         subject.absentDates.push(targetDate);
+//         subject.streak = 0;
+//       }
+//     }
+
+//     await attendance.save();
+
+//     const percentage = calculatePercentage(
+//       subject.attendedClasses,
+//       subject.totalClasses
+//     );
+
+//     res.status(200).json({
+//       success: true,
+//       subject: subject.subjectName,
+//       attendancePercentage: percentage,
+//       status: calculateStatus(percentage),
+//       streak: subject.streak
+//     });
+
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+// // GET Attendance (Unified for both types)
+// exports.getAttendance = async (req, res) => {
+//   try {
+//     const { educationLevel } = req.user;
+
+//     // For now we return the raw document, frontend can parse what it needs
+//     const attendance = await Attendance.findOne({ user: req.user._id });
+
+//     if (!attendance) {
+//       return res.status(200).json({
+//         found: false,
+//         streak: 0,
+//         history: []
+//       });
+//     }
+
+//     if (educationLevel === 'school') {
+//       return res.status(200).json({
+//         found: true,
+//         type: 'school',
+//         streak: attendance.streak,
+//         presentDates: attendance.presentDates,
+//         absentDates: attendance.absentDates,
+//         totalClasses: attendance.totalClasses,
+//         attendedClasses: attendance.attendedClasses
+//       });
+//     } else {
+//       // College - return all subjects
+//       return res.status(200).json({
+//         found: true,
+//         type: 'college',
+//         subjects: attendance.subjects
+//       });
+//     }
+
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 const Attendance = require("../models/Attendance.model");
+const { sameDate, isWeekend } = require("../utils/attendanceHelpers");
 const {
   calculatePercentage,
   calculateStatus
 } = require("../utils/calculateAttendance");
 
-
-const sameDate = (d1, d2) =>
-  new Date(d1).toDateString() === new Date(d2).toDateString();
-
 // ================= SCHOOL =================
 exports.markSchoolAttendance = async (req, res) => {
   try {
     const { isPresent, date } = req.body;
-    let userattend = await Attendance.findOne({ user: req.user._id });
-    const targetDate = new Date(date);
-    if (!userattend) {
-      userattend = await Attendance.create({
-        user: req.user._id,
-        totalClasses: 0,
-        attendedClasses: 0,
-        streak: 0,
-        presentDates: [],
-        absentDates: []
-      });
 
+    if (isWeekend(date, "school")) {
+      return res.status(400).json({ message: "No classes on Sunday" });
     }
-    const presentIndex = userattend.presentDates.findIndex(d =>
-      sameDate(d, targetDate)
-    );
-
-    const absentIndex = userattend.absentDates.findIndex(d =>
-      sameDate(d, targetDate)
-    );
-
-    if (presentIndex !== -1) {
-      if (!isPresent) {
-        userattend.presentDates.splice(presentIndex, 1);
-        userattend.absentDates.push(targetDate);
-        userattend.attendedClasses -= 1;
-        userattend.streak = 0;
-      }
-    }
-
-    // ---------------- CASE 2: Already ABSENT ----------------
-    else if (absentIndex !== -1) {
-      if (isPresent) {
-        userattend.absentDates.splice(absentIndex, 1);
-        userattend.presentDates.push(targetDate);
-        userattend.attendedClasses += 1;
-        userattend.streak += 1;
-      }
-    }
-    else {
-
-      userattend.totalClasses += 1;
-
-      if (isPresent) {
-        userattend.presentDates.push(targetDate);
-        userattend.attendedClasses += 1;
-        userattend.streak += 1;
-      } else {
-        userattend.absentDates.push(targetDate);
-        userattend.streak = 0;
-      }
-    }
-    await userattend.save();
-
-    res.status(200).json({
-      message: "Attendance updated successfully",
-      attendance: userattend
-    });
-
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-
-// ================= COLLEGE =================
-exports.markSubjectAttendance = async (req, res) => {
-  try {
-    const { subjectName, isPresent, date } = req.body;
-    const targetDate = new Date(date);
 
     let attendance = await Attendance.findOne({ user: req.user._id });
 
     if (!attendance) {
       attendance = await Attendance.create({
         user: req.user._id,
-        subjects: []
+        presentDates: [],
+        absentDates: []
       });
     }
 
-    let subject = attendance.subjects.find(
+    const targetDate = new Date(date);
+
+    const presentIndex = attendance.presentDates.findIndex(d =>
+      sameDate(d, targetDate)
+    );
+    const absentIndex = attendance.absentDates.findIndex(d =>
+      sameDate(d, targetDate)
+    );
+
+    if (presentIndex !== -1) {
+      if (!isPresent) {
+        attendance.presentDates.splice(presentIndex, 1);
+        attendance.absentDates.push(targetDate);
+        attendance.schoolStreak = 0;
+      }
+    } else if (absentIndex !== -1) {
+      if (isPresent) {
+        attendance.absentDates.splice(absentIndex, 1);
+        attendance.presentDates.push(targetDate);
+        attendance.schoolStreak += 1;
+      }
+    } else {
+      if (isPresent) {
+        attendance.presentDates.push(targetDate);
+        attendance.schoolStreak += 1;
+      } else {
+        attendance.absentDates.push(targetDate);
+        attendance.schoolStreak = 0;
+      }
+    }
+
+    await attendance.save();
+
+    const totalDays =
+      attendance.presentDates.length + attendance.absentDates.length;
+
+    const percentage = calculatePercentage(
+      attendance.presentDates.length,
+      totalDays
+    );
+
+    res.json({
+      message: "Attendance updated",
+      percentage,
+      status: calculateStatus(percentage),
+      streak: attendance.schoolStreak
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ================= COLLEGE =================
+exports.markSubjectAttendance = async (req, res) => {
+  try {
+    const { subjectName, isPresent, date } = req.body;
+
+    if (isWeekend(date, "college")) {
+      return res.status(400).json({ message: "No classes on weekend" });
+    }
+
+    const attendance = await Attendance.findOne({ user: req.user._id });
+
+    if (!attendance || attendance.subjects.length === 0) {
+      return res.status(400).json({
+        message: "Subjects not set up"
+      });
+    }
+
+    const subject = attendance.subjects.find(
       (s) => s.subjectName === subjectName
     );
 
     if (!subject) {
-      subject = {
-        subjectName,
-        totalClasses: 0,
-        attendedClasses: 0,
-        streak: 0,
-        presentDates: [],
-        absentDates: []
-      };
-      attendance.subjects.push(subject);
+      return res.status(400).json({
+        message: "Invalid subject"
+      });
     }
 
-    // ensure arrays exist
-    subject.presentDates ||= [];
-    subject.absentDates ||= [];
+    const targetDate = new Date(date);
 
     const presentIndex = subject.presentDates.findIndex(d =>
       sameDate(d, targetDate)
     );
-
     const absentIndex = subject.absentDates.findIndex(d =>
       sameDate(d, targetDate)
     );
 
-    // -------- CASE 1: already PRESENT --------
     if (presentIndex !== -1) {
       if (!isPresent) {
         subject.presentDates.splice(presentIndex, 1);
         subject.absentDates.push(targetDate);
-        subject.attendedClasses -= 1;
         subject.streak = 0;
       }
-    }
-
-    // -------- CASE 2: already ABSENT --------
-    else if (absentIndex !== -1) {
+    } else if (absentIndex !== -1) {
       if (isPresent) {
         subject.absentDates.splice(absentIndex, 1);
         subject.presentDates.push(targetDate);
-        subject.attendedClasses += 1;
         subject.streak += 1;
       }
-    }
-
-    // -------- CASE 3: NEW DATE --------
-    else {
-      subject.totalClasses += 1;
-
+    } else {
       if (isPresent) {
         subject.presentDates.push(targetDate);
-        subject.attendedClasses += 1;
         subject.streak += 1;
       } else {
         subject.absentDates.push(targetDate);
@@ -157,15 +354,17 @@ exports.markSubjectAttendance = async (req, res) => {
 
     await attendance.save();
 
+    const totalDays =
+      subject.presentDates.length + subject.absentDates.length;
+
     const percentage = calculatePercentage(
-      subject.attendedClasses,
-      subject.totalClasses
+      subject.presentDates.length,
+      totalDays
     );
 
-    res.status(200).json({
-      success: true,
+    res.json({
       subject: subject.subjectName,
-      attendancePercentage: percentage,
+      percentage,
       status: calculateStatus(percentage),
       streak: subject.streak
     });
@@ -175,43 +374,37 @@ exports.markSubjectAttendance = async (req, res) => {
   }
 };
 
-// GET Attendance (Unified for both types)
+// ================= GET ATTENDANCE =================
 exports.getAttendance = async (req, res) => {
   try {
-    const { educationLevel } = req.user;
-
-    // For now we return the raw document, frontend can parse what it needs
     const attendance = await Attendance.findOne({ user: req.user._id });
 
     if (!attendance) {
-      return res.status(200).json({
-        found: false,
-        streak: 0,
-        history: []
+      return res.status(200).json({ found: false });
+    }
+
+    if (req.user.educationLevel === "school") {
+      const totalDays =
+        attendance.presentDates.length + attendance.absentDates.length;
+
+      return res.json({
+        found: true,
+        type: "school",
+        presentDates: attendance.presentDates,
+        absentDates: attendance.absentDates,
+        totalDays,
+        streak: attendance.schoolStreak
       });
     }
 
-    if (educationLevel === 'school') {
-      return res.status(200).json({
-        found: true,
-        type: 'school',
-        streak: attendance.streak,
-        presentDates: attendance.presentDates,
-        absentDates: attendance.absentDates,
-        totalClasses: attendance.totalClasses,
-        attendedClasses: attendance.attendedClasses
-      });
-    } else {
-      // College - return all subjects
-      return res.status(200).json({
-        found: true,
-        type: 'college',
-        subjects: attendance.subjects
-      });
-    }
+    // COLLEGE
+    return res.json({
+      found: true,
+      type: "college",
+      subjects: attendance.subjects
+    });
 
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
