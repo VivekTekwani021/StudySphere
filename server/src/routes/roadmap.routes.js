@@ -5,11 +5,13 @@ const { protect } = require("../middleware/auth.middleware");
 const {
   createRoadmap,
   completeToday,
-  clearBacklog
+  clearBacklog,
+  getRoadmap
 } = require("../controllers/roadmap.controller");
 
 router.post("/", protect, createRoadmap);
 router.post("/complete", protect, completeToday);
 router.post("/backlog/clear", protect, clearBacklog);
+router.get("/", protect, getRoadmap);
 
 module.exports = router;

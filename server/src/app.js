@@ -25,6 +25,7 @@ app.use("/api/roadmap", require("./routes/roadmap.routes"));
 
 
 
+
 app.get("/", (req, res) => {
   res.send("Student Tracker Backend Running 🚀");
 });
