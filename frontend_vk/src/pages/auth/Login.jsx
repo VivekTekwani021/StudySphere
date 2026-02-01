@@ -10,6 +10,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
+ 
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
@@ -20,8 +21,12 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const success = await login(email, password);
-      if (success) {
+      const user = await login(email, password);
+      console.log(user);
+      if(user.isOnboardingComplete===false){
+        navigate("/onboarding");
+      }
+      else{
         navigate(from, { replace: true });
       }
     } catch (error) {

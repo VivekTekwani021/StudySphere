@@ -4,8 +4,9 @@ import Card, { CardContent, CardHeader, CardTitle } from '../../components/commo
 import { CalendarCheck, BookOpen, Trophy, Info } from 'lucide-react';
 
 const Dashboard = () => {
-  const { user } = useAuth();
-  
+  const { user, loading } = useAuth();
+
+if (loading) return <div>Loading...</div>;
   const StatCard = ({ title, value, icon: Icon, color }) => (
     <Card>
       <CardContent className="flex items-center p-6">

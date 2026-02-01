@@ -47,6 +47,7 @@ exports.register = async (req, res) => {
         educationLevel: user.educationLevel,
         course: user.course,
         isPlacementEnabled: user.isPlacementEnabled,
+        isOnboardingComplete:user.isOnboardingComplete
         // Include minimal profile data if needed immediately
       }
     });
@@ -82,7 +83,8 @@ exports.login = async (req, res) => {
         email: user.email,
         educationLevel: user.educationLevel,
         course: user.course,
-        isPlacementEnabled: user.isPlacementEnabled
+        isPlacementEnabled: user.isPlacementEnabled,
+        isOnboardingComplete:user.isOnboardingComplete
       }
     });
   } catch (error) {

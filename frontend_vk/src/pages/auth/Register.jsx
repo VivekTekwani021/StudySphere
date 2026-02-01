@@ -24,12 +24,12 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const success = await register(formData);
+      const user = await register(formData);
       // After registration, we usually want to direct to onboarding if not complete, 
       // or dashboard if it is. For now, assume a new user needs onboarding.
       // Ideally, the backend 'register' response user object contains 'isOnboarded' flag.
       // We will check that in the auth context or here.
-      if (success) {
+      if (user) {
         // We'll direct to onboarding by default for new users
         navigate('/onboarding');
       }

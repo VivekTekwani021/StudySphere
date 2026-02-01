@@ -92,16 +92,16 @@ const CollegeAttendance = () => {
 
       {isAdding && (
         <Card className="p-4 bg-gray-50 border-dashed border-2">
-            <form onSubmit={handleAddSubject} className="flex gap-2">
+          
                 <Input 
                     placeholder="Subject Name (e.g. Data Structures)" 
                     value={newSubject}
                     onChange={(e) => setNewSubject(e.target.value)}
                     required
                 />
-                <Button type="submit">Save</Button>
+                <Button onSubmit={handleAddSubject}  type="submit">Save</Button>
                 <Button variant="ghost" onClick={() => setIsAdding(false)}>Cancel</Button>
-            </form>
+            
         </Card>
       )}
 
