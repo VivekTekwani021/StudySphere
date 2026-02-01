@@ -19,9 +19,7 @@ export const AuthProvider = ({ children }) => {
         try {
           const response = await authApi.getMe();
           if (response.success) {
-            console.log(user);
-            setUser(response.data);
-
+            setUser(response.user);
             setIsAuthenticated(true);
           } else {
             // Token invalid

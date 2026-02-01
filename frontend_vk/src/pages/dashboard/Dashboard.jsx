@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useState,useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Card, { CardContent, CardHeader, CardTitle } from '../../components/common/Card';
 import { CalendarCheck, BookOpen, Trophy, Info } from 'lucide-react';
 
 const Dashboard = () => {
-  const { user, loading } = useAuth();
+  
+const { user, loading } = useAuth();
 
-if (loading) return <div>Loading...</div>;
+if (loading) {
+  return <div className="p-6 text-gray-500">Loading...</div>;
+}
+
   const StatCard = ({ title, value, icon: Icon, color }) => (
     <Card>
       <CardContent className="flex items-center p-6">

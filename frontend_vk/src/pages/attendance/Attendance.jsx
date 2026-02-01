@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import SchoolAttendance from './SchoolAttendance';
 import CollegeAttendance from './CollegeAttendance';
 import { Calendar } from 'lucide-react';
 
 const Attendance = () => {
-  const { user } = useAuth();
+
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="p-6 text-gray-500">Loading...</div>;
+  }
   const isCollege = user?.educationLevel === 'College';
 
   return (
