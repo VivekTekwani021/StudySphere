@@ -41,9 +41,10 @@ const CollegeAttendance = () => {
   }, []);
 
   const handleAddSubject = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); 
     if (!newSubject.trim()) return;
     try {
+      console.log(newSubject, typeof newSubject);
       const response = await attendanceApi.addSubject(newSubject);
       if (response.success) {
         toast.success('Subject added');
@@ -52,6 +53,7 @@ const CollegeAttendance = () => {
         fetchData();
       }
     } catch (error) {
+      console.log("error:",error);
       toast.error(error.response?.data?.message || 'Failed to add subject');
     }
   };
@@ -90,21 +92,26 @@ const CollegeAttendance = () => {
         </Button>
       </div>
 
-      {isAdding && (
-        <Card className="p-4 bg-gray-50 border-dashed border-2">
-          
-                <Input 
-                    placeholder="Subject Name (e.g. Data Structures)" 
-                    value={newSubject}
-                    onChange={(e) => setNewSubject(e.target.value)}
-                    required
-                />
-                <Button onSubmit={handleAddSubject}  type="submit">Save</Button>
-                <Button variant="ghost" onClick={() => setIsAdding(false)}>Cancel</Button>
-            
-        </Card>
-      )}
-
+     {isAdding && (
+  <Card className="p-4 bg-gray-50 border-dashed border-2">
+    <form onSubmit={handleAddSubject}>
+      <Input 
+        placeholder="Subject Name (e.g. Data Structures)" 
+        value={newSubject}
+        onChange={(e) => setNewSubject(e.target.value)}
+        required
+      />
+      <Button type="submit">Save</Button>
+      <Button
+        type="button"
+        variant="ghost"
+        onClick={() => setIsAdding(false)}
+      >
+        Cancel
+      </Button>
+    </form>
+  </Card>
+)}
       {loading ? (
         <p className="text-center py-8 text-gray-500">Loading subjects...</p>
       ) : subjects.length === 0 ? (

@@ -101,17 +101,17 @@ exports.addSubject = async (req, res) => {
   try {
     const { subjectName } = req.body;
 
-    if (!subjectName) {
-      return res.status(400).json({
-        message: "Subject name is required"
-      });
+    if (!subjectName || !subjectName.trim()) {
+      return res.status(400).json({ message: "Subject name is required" });
     }
 
-    const attendance = await Attendance.findOne({ user: req.user._id });
+    let attendance = await Attendance.findOne({ user: req.user._id });
 
-    if (!attendance || attendance.subjects.length === 0) {
-      return res.status(400).json({
-        message: "Please set up subjects first"
+    // ✅ CREATE IF NOT EXISTS
+    if (!attendance) {
+      attendance = await Attendance.create({
+        user: req.user._id,
+        subjects: []
       });
     }
 
@@ -121,9 +121,7 @@ exports.addSubject = async (req, res) => {
     );
 
     if (exists) {
-      return res.status(400).json({
-        message: "Subject already exists"
-      });
+      return res.status(400).json({ message: "Subject already exists" });
     }
 
     attendance.subjects.push({
@@ -144,6 +142,7 @@ exports.addSubject = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 /**
  * ===============================

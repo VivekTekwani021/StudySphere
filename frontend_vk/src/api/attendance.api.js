@@ -28,7 +28,7 @@ export const attendanceApi = {
 
     // Add a new subject (College)
     addSubject: async (subjectName) => {
-        const response = await api.post('/attendance/subjects/add', { subjectName });
+        const response = await api.post('/attendance/subjects/add',   { subjectName });
         return response.data;
     },
 
