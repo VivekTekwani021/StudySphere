@@ -24,10 +24,12 @@ const CollegeAttendance = () => {
   const fetchData = async () => {
     try {
       const response = await attendanceApi.getHistory();
-      if (response.success) {
+      console.log(response);
+      if (response.found) {
         // Assume response.data is the array of subjects or contains it
         // Adjust logic based on actual backend response shape
-        setSubjects(response.data.subjects || response.data || []); 
+        
+        setSubjects(response.subjects || response.data || []); 
       }
     } catch (error) {
       console.error("Failed to fetch subjects:", error);

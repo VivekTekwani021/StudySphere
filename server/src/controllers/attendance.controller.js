@@ -380,6 +380,7 @@ exports.getAttendance = async (req, res) => {
     const attendance = await Attendance.findOne({ user: req.user._id });
 
     if (!attendance) {
+      console.log("not found");
       return res.status(200).json({ found: false });
     }
 
@@ -398,6 +399,7 @@ exports.getAttendance = async (req, res) => {
     }
 
     // COLLEGE
+    console.log("here");
     return res.json({
       found: true,
       type: "college",
