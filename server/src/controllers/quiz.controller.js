@@ -31,6 +31,12 @@ exports.generateQuiz = async (req, res) => {
 };
 
 // Submit quiz
+// if (!Quiz.questions || Quiz.questions.length === 0) {
+//   return res.status(400).json({
+//     message: "Quiz has no questions. Please regenerate quiz."
+//   });
+// }
+
 exports.submitQuiz = async (req, res) => {
   try {
     const { quizId, answers } = req.body;
@@ -49,12 +55,19 @@ exports.submitQuiz = async (req, res) => {
         correct++;
       } else {
         // Collect details for AI explanations for incorrect answers
+        // explanations.push({
+        //   question: q.question,
+        //   yourAnswer: answers[i],
+        //   correctAnswer: q.correctAnswer,
+        //   difficulty: q.difficulty
+        // });
         explanations.push({
-          question: q.question,
-          yourAnswer: answers[i],
-          correctAnswer: q.correctAnswer,
-          difficulty: q.difficulty
-        });
+  question: q.question,
+  yourAnswer: q.options[answers[i]],
+  correctAnswer: q.options[q.correctAnswer],
+  difficulty: q.difficulty
+});
+
       }
     });
 

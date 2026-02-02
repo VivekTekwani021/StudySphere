@@ -1,9 +1,30 @@
 const mongoose = require("mongoose");
 
+// const questionSchema = new mongoose.Schema({
+//   question: String,
+//   options: [String],
+//   correctAnswer: String,
+//   difficulty: {
+//     type: String,
+//     enum: ["Easy", "Medium", "Hard"]
+//   }
+// });
 const questionSchema = new mongoose.Schema({
-  question: String,
-  options: [String],
-  correctAnswer: String,
+  question: {
+    type: String,
+    required: true
+  },
+  options: {
+    type: [String],
+    required: true
+  },
+  correctAnswer: {
+    type: Number, // ✅ IMPORTANT
+    required: true
+  },
+  explanation: {
+    type: String // ✅ ADD THIS
+  },
   difficulty: {
     type: String,
     enum: ["Easy", "Medium", "Hard"]
@@ -23,9 +44,9 @@ const quizSchema = new mongoose.Schema(
       required: true
     },
 
-    // questions: [questionSchema],
+    questions: [questionSchema],
 
-    // answers: [String], // user answers (index-wise)
+    answers: [String], // user answers (index-wise)
     correctAnswer: Number,
      answers: [Number],
 
