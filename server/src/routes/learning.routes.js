@@ -37,7 +37,7 @@ router.post(
   "/complete",
   protect,
   markTopicLearned,
-  getLearningContent
+  //getLearningContent
 );
 
 
