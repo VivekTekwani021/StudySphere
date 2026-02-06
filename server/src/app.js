@@ -9,8 +9,10 @@ const authRoutes = require("./routes/auth.routes");
 const app = express();
 
 app.use(cors());
+
 app.use(express.json());
 
+require("./cron/roadmap.cron");
 app.use("/api/auth", authRoutes);
 
 app.use("/api/onboarding", onboardingRoutes);
@@ -21,6 +23,7 @@ app.use("/api/pdf", require("./routes/pdf.routes"));
 app.use("/api/habit", require("./routes/habit.routes"));
 app.use("/api/placement", require("./routes/placement.routes"));
 app.use("/api/roadmap", require("./routes/roadmap.routes"));
+//app.use("/api/roadmap", require("./routes/roadmap.routes"));
 
 
 

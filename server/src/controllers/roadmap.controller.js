@@ -1,202 +1,186 @@
 // const Roadmap = require("../models/Roadmap.model");
+// const { generateRoadmapAI } = require("../services/aiRoadmap.service");
+// const { processBacklogs } = require("../services/backlog.service");
 
-// // Create roadmap
-// exports.createRoadmap = async (req, res) => {
-//   const { title, days } = req.body;
 
-//   const startDate = new Date();
-//   startDate.setHours(0, 0, 0, 0);
+// // CREATE ROADMAP
+// exports.generateRoadmap = async (req, res) => {
+//   try {
+//     const { topic, duration, level } = req.body;
+//     const userId = req.user._id;
 
-//   const roadmapDays = days.map((day, index) => ({
-//     dayNumber: index + 1,
-//     title: day.title,
-//     tasks: day.tasks,
-//     date: new Date(startDate.getTime() + index * 86400000)
-//   }));
+//     const aiDays = await generateRoadmapAI(topic, duration, level);
 
-//   const roadmap = await Roadmap.create({
-//     user: req.user._id,
-//     title,
-//     startDate,
-//     days: roadmapDays
-//   });
+//     const startDate = new Date();
 
-//   res.status(201).json(roadmap);
+//     const days = aiDays.map((d, i) => ({
+//       day: d.day,
+//       date: new Date(startDate.getTime() + i * 86400000),
+//       tasks: d.tasks.map((t) => ({ title: t })),
+//     }));
+
+//     const roadmap = await Roadmap.create({
+//       userId,
+//       topic,
+//       duration,
+//       startDate,
+//       days,
+//     });
+
+//     res.json(roadmap);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
 // };
 
-// exports.completeToday = async (req, res) => {
-//   const roadmap = await Roadmap.findOne({ user: req.user._id });
 
-//   if (!roadmap || roadmap.completed) {
-//     return res.status(400).json({ message: "No active roadmap" });
-//   }
+// // GET TODAY TASKS
+// exports.getTodayTasks = async (req, res) => {
+//   const roadmap = await Roadmap.findOne({
+//     userId: req.user._id,
+//     status: "active",
+//   });
 
-//   const today = new Date();
-//   today.setHours(0, 0, 0, 0);
+//   if (!roadmap) return res.json(null);
 
-//   const currentDayObj = roadmap.days.find(
-//     d => d.dayNumber === roadmap.currentDay
+//   //processBacklogs(roadmap);
+//   processBacklogs(roadmap);
+//    await roadmap.save();
+
+
+//   const today = new Date().toDateString();
+
+//   const todayDay = roadmap.days.find(
+//     (d) => new Date(d.date).toDateString() === today
 //   );
 
-//   // 🔴 Missed day → backlog
-//   if (today > currentDayObj.date) {
-//     roadmap.backlog.push({
-//       dayNumber: currentDayObj.dayNumber,
-//       tasks: currentDayObj.tasks
-//     });
-
-//     roadmap.currentDay += 1;
-//     await roadmap.save();
-
-//     return res.status(400).json({
-//       message: "Day missed. Task moved to backlog."
-//     });
-//   }
-
-//   // ✅ Complete day
-//   currentDayObj.completed = true;
-//   roadmap.currentDay += 1;
-
-//   if (roadmap.currentDay > roadmap.days.length) {
-//     roadmap.completed = true;
-//   }
-
-//   await roadmap.save();
-
 //   res.json({
-//     success: true,
-//     message: "Day completed 🎉",
-//     nextDay: roadmap.currentDay
+//     today: todayDay,
+//     backlog: roadmap.days.filter((d) => d.backlog),
 //   });
 // };
 
-// exports.clearBacklog = async (req, res) => {
-//   const roadmap = await Roadmap.findOne({ user: req.user._id });
 
-//   if (roadmap.backlog.length === 0) {
-//     return res.status(400).json({ message: "No backlog" });
+// // MARK TASK COMPLETE
+// exports.completeTask = async (req, res) => {
+//   const { roadmapId, dayId, taskId } = req.body;
+
+//   const roadmap = await Roadmap.findById(roadmapId);
+
+//   const day = roadmap.days.id(dayId);
+//   const task = day.tasks.id(taskId);
+
+//   task.completed = true;
+//   task.completedAt = new Date();
+
+//   if (day.tasks.every((t) => t.completed)) {
+//     day.isCompleted = true;
+//     roadmap.streak += 1;
 //   }
 
-//   roadmap.backlog.shift(); // FIFO
 //   await roadmap.save();
-
-//   res.json({
-//     success: true,
-//     message: "Backlog cleared ✅"
-//   });
-
-//   // GET Current Roadmap // aaj add kiya hai 20-01-2025
-  
-// exports.getRoadmap = async (req, res) => {
-//   try {
-//     const roadmap = await Roadmap.findOne({ user: req.user._id });
-//     if (!roadmap) {
-//       return res.status(200).json({ found: false });
-//     }
-//     res.status(200).json({ found: true, roadmap });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
+//   res.json(roadmap);
 // };
-// };
-
 const Roadmap = require("../models/Roadmap.model");
+const { generateRoadmapAI } = require("../services/aiRoadmap.service");
+const { processBacklogs } = require("../services/backlog.service");
 
-// Create roadmap
-exports.createRoadmap = async (req, res) => {
-  const { title, days } = req.body;
 
-  const startDate = new Date();
-  startDate.setHours(0, 0, 0, 0);
+// CREATE ROADMAP
+exports.generateRoadmap = async (req, res) => {
+  try {
+    const { topic, duration, level } = req.body;
+    const userId = req.user._id;
 
-  const roadmapDays = days.map((day, index) => ({
-    dayNumber: index + 1,
-    title: day.title,
-    tasks: day.tasks,
-    date: new Date(startDate.getTime() + index * 86400000),
-  }));
+    const aiDays = await generateRoadmapAI(topic, duration, level);
 
-  const roadmap = await Roadmap.create({
-    user: req.user._id,
-    title,
-    startDate,
-    days: roadmapDays,
-  });
+    const startDate = new Date();
 
-  res.status(201).json(roadmap);
-};
+    const days = aiDays.map((d, i) => ({
+      day: d.day,
+      date: new Date(startDate.getTime() + i * 86400000),
+      tasks: d.tasks.map((t) => ({ title: t })),
+    }));
 
-// Complete today
-exports.completeToday = async (req, res) => {
-  const roadmap = await Roadmap.findOne({ user: req.user._id });
-
-  if (!roadmap || roadmap.completed) {
-    return res.status(400).json({ message: "No active roadmap" });
-  }
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const currentDayObj = roadmap.days.find(
-    (d) => d.dayNumber === roadmap.currentDay
-  );
-
-  if (today > currentDayObj.date) {
-    roadmap.backlog.push({
-      dayNumber: currentDayObj.dayNumber,
-      tasks: currentDayObj.tasks,
+    const roadmap = await Roadmap.create({
+      userId,
+      topic,
+      duration,
+      startDate,
+      days,
     });
 
-    roadmap.currentDay += 1;
+    res.json(roadmap);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
+// GET TODAY TASKS
+exports.getTodayTasks = async (req, res) => {
+  try {
+    const roadmap = await Roadmap.findOne({
+      userId: req.user._id,
+      status: "active",
+    });
+
+    // no roadmap yet
+    if (!roadmap) {
+      return res.json({
+        roadmapId: null,
+        today: null,
+        backlog: [],
+      });
+    }
+
+    // process backlog
+    processBacklogs(roadmap);
     await roadmap.save();
 
-    return res.status(400).json({
-      message: "Day missed. Task moved to backlog.",
+    const todayStr = new Date().toDateString();
+
+    const todayDay = roadmap.days.find(
+      (d) => new Date(d.date).toDateString() === todayStr
+    );
+
+    res.json({
+      roadmapId: roadmap._id,   // 🔥 VERY IMPORTANT
+      today: todayDay || null,
+      backlog: roadmap.days.filter((d) => d.backlog),
     });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-
-  currentDayObj.completed = true;
-  roadmap.currentDay += 1;
-
-  if (roadmap.currentDay > roadmap.days.length) {
-    roadmap.completed = true;
-  }
-
-  await roadmap.save();
-
-  res.json({
-    success: true,
-    message: "Day completed 🎉",
-    nextDay: roadmap.currentDay,
-  });
 };
 
-// Clear backlog
-exports.clearBacklog = async (req, res) => {
-  const roadmap = await Roadmap.findOne({ user: req.user._id });
 
-  if (roadmap.backlog.length === 0) {
-    return res.status(400).json({ message: "No backlog" });
-  }
 
-  roadmap.backlog.shift();
-  await roadmap.save();
-
-  res.json({
-    success: true,
-    message: "Backlog cleared ✅",
-  });
-};
-
-// ✅ GET roadmap (NOW CORRECT)
-exports.getRoadmap = async (req, res) => {
+// MARK TASK COMPLETE
+exports.completeTask = async (req, res) => {
   try {
-    const roadmap = await Roadmap.findOne({ user: req.user._id });
-    if (!roadmap) {
-      return res.status(200).json({ found: false });
+    const { roadmapId, dayId, taskId } = req.body;
+
+    const roadmap = await Roadmap.findById(roadmapId);
+    if (!roadmap) return res.status(404).json({ error: "Roadmap not found" });
+
+    const day = roadmap.days.id(dayId);
+    const task = day.tasks.id(taskId);
+
+    task.completed = true;
+    task.completedAt = new Date();
+
+    if (day.tasks.every((t) => t.completed)) {
+      day.isCompleted = true;
+      roadmap.streak += 1;
     }
-    res.status(200).json({ found: true, roadmap });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+
+    await roadmap.save();
+    res.json(roadmap);
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };

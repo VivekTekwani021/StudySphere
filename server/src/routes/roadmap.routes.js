@@ -1,17 +1,22 @@
+// const express = require("express");
+// const router = express.Router();
+// const ctrl = require("../controllers/roadmap.controller");
+// const protect = require("../middleware/auth"); // your auth middleware
+
+// router.post("/generate", protect, ctrl.generateRoadmap);
+// router.get("/today", protect, ctrl.getTodayTasks);
+// router.post("/complete", protect, ctrl.completeTask);
+
+// module.exports = router;
 const express = require("express");
 const router = express.Router();
+const ctrl = require("../controllers/roadmap.controller");
 
+// ✅ correct import
 const { protect } = require("../middleware/auth.middleware");
-const {
-  createRoadmap,
-  completeToday,
-  clearBacklog,
-  getRoadmap
-} = require("../controllers/roadmap.controller");
 
-router.post("/", protect, createRoadmap);
-router.post("/complete", protect, completeToday);
-router.post("/backlog/clear", protect, clearBacklog);
-router.get("/", protect, getRoadmap);
+router.post("/generate", protect, ctrl.generateRoadmap);
+router.get("/today", protect, ctrl.getTodayTasks);
+router.post("/complete", protect, ctrl.completeTask);
 
 module.exports = router;

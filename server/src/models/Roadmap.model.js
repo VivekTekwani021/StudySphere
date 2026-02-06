@@ -1,48 +1,27 @@
 const mongoose = require("mongoose");
 
-const daySchema = new mongoose.Schema({
-  dayNumber: Number,
+const TaskSchema = new mongoose.Schema({
   title: String,
-  tasks: [String],
-  completed: {
-    type: Boolean,
-    default: false
-  },
-  date: Date // assigned calendar date
+  completed: { type: Boolean, default: false },
+  completedAt: Date,
 });
 
-const roadmapSchema = new mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true
-    },
+const DaySchema = new mongoose.Schema({
+  day: Number,
+  date: Date,
+  tasks: [TaskSchema],
+  isCompleted: { type: Boolean, default: false },
+  backlog: { type: Boolean, default: false },
+});
 
-    title: String, // e.g. "7-Day Binary Search Roadmap"
+const RoadmapSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  topic: String,
+  duration: Number,
+  startDate: Date,
+  status: { type: String, default: "active" },
+  days: [DaySchema],
+  streak: { type: Number, default: 0 },
+});
 
-    startDate: Date,
-
-    currentDay: {
-      type: Number,
-      default: 1
-    },
-
-    days: [daySchema],
-
-    backlog: [
-      {
-        dayNumber: Number,
-        tasks: [String]
-      }
-    ],
-
-    completed: {
-      type: Boolean,
-      default: false
-    }
-  },
-  { timestamps: true }
-);
-
-module.exports = mongoose.model("Roadmap", roadmapSchema);
+module.exports = mongoose.model("Roadmap", RoadmapSchema);

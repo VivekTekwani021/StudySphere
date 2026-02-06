@@ -72,7 +72,7 @@ import Layout from './components/layout/Layout';
 // Pages
 import Attendance from './pages/attendance/Attendance';
 import Habits from './pages/habits/Habits';
-import Roadmap from './pages/roadmap/Roadmap';
+//import Roadmap from './pages/roadmap/RoadmapPage';
 import Placement from './pages/placement/Placement';
 import Profile from './pages/profile/Profile';
 import Landing from './pages/Landing';
@@ -91,6 +91,9 @@ import LearningRoom from './pages/learning/LearningRoom';
 import LearningContent from './pages/learning/LearningContent';
 import YouTubeLearning from './pages/learning/YouTubeLearning';
 import GeneratePDF from './pages/learning/GeneratePDF';
+
+
+
 
 function App() {
   return (
@@ -118,7 +121,7 @@ function App() {
             <Route path="/learning/pdf" element={<GeneratePDF />} />
 
             <Route path="/habits" element={<Habits />} />
-            <Route path="/roadmap" element={<Roadmap />} />
+            
             <Route path="/placement" element={<Placement />} />
             <Route path="/profile" element={<Profile />} />
 
@@ -126,6 +129,8 @@ function App() {
             <Route path="/quiz" element={<QuizHome />} />
             <Route path="/quiz/attempt" element={<QuizAttempt />} />
             <Route path="/quiz/result" element={<QuizResult />} />
+
+         
 
           </Route>
 

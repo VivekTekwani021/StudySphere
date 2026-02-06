@@ -2,6 +2,7 @@ import React, { useState,useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Card, { CardContent, CardHeader, CardTitle } from '../../components/common/Card';
 import { CalendarCheck, BookOpen, Trophy, Info } from 'lucide-react';
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   
@@ -39,6 +40,15 @@ if (loading) {
           icon={CalendarCheck} 
           color="bg-blue-500" 
         />
+
+
+        <Card onClick={() => navigate("/roadmap")} className="cursor-pointer">
+  <CardContent className="p-6 text-center">
+    <h2 className="text-lg font-bold">AI Roadmap</h2>
+    <p className="text-gray-500">View your journey</p>
+  </CardContent>
+</Card>
+
         <StatCard 
           title="Topics Learned" 
           value="--" 
