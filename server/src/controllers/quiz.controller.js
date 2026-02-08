@@ -18,8 +18,8 @@ exports.generateQuiz = async (req, res) => {
     });
 
     // For Learning Mode, we send specific details (or hiding them if strict)
-    // const safeQuestions = questions.map(({ correctAnswer, ...rest }) => rest);
-    const safeQuestions = questions; // Send full data for immediate feedback mode
+    const safeQuestions = questions.map(({ correctAnswer, explanation, ...rest }) => rest);
+    // const safeQuestions = questions; // Send full data for immediate feedback mode
 
     res.status(200).json({
       quizId: quiz._id,
