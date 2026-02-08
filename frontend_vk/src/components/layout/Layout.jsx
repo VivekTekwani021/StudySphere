@@ -24,6 +24,14 @@ const Layout = () => {
           isDark ? "bg-slate-900" : "bg-gray-50"
         )}>
           <Outlet />
+
+          {/* Watermark / Footer */}
+          <footer className={clsx(
+            "mt-8 py-6 text-center text-sm font-medium border-t",
+            isDark ? "text-slate-500 border-slate-800" : "text-slate-400 border-gray-200"
+          )}>
+            <p>© {new Date().getFullYear()} StudySphere. Created by <span className="text-indigo-500 font-bold">Vivek Tekwani</span>. All rights reserved.</p>
+          </footer>
         </main>
       </div>
     </div>
