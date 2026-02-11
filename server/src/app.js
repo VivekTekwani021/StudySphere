@@ -16,6 +16,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+app.options("*", cors());   // 🔥 ADD THIS LINE
 
 app.use(express.json());
 
