@@ -12,8 +12,8 @@ const app = express();
 app.use(cors({
   //origin: ['http://localhost:5173', 'http://localhost:3000' , 'https://studysphere-nu-one.vercel.app'], // Vite default port and React default
   // origin: 'https://studysphere-nu-one.vercel.app',
-  //  origin: ["https://studysphere-vivek.vercel.app","http://localhost:5173"],
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: "https://studysphere-vivek.vercel.app",
+  //origin: ["http://localhost:5173", "http://localhost:5174"],
 
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
