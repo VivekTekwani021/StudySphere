@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
-import Button from '../../components/common/Button';
-import Input from '../../components/common/Input';
-import Card, { CardContent, CardHeader, CardTitle } from '../../components/common/Card';
-import { UserPlus, Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
+import { Code2, Mail, Lock, User, ArrowRight, Loader2, Zap, Shield, Users, TrendingUp } from 'lucide-react';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -52,33 +49,61 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-slate-50 dark:bg-slate-900">
-      {/* Left Side - Hero/Image */}
-      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-purple-600 via-pink-600 to-rose-500 relative overflow-hidden items-center justify-center p-12">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80')] bg-cover bg-center mix-blend-overlay opacity-20"></div>
+    <div className="min-h-screen w-full flex bg-[#0a0e1a]">
+
+      {/* Left Side - Brand */}
+      <div className="hidden lg:flex w-1/2 bg-[#0d1117] relative overflow-hidden items-center justify-center p-12 border-r border-gray-800">
+        {/* Gradient Orbs */}
+        <div className="absolute top-20 right-20 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
+
         <div className="relative z-10 text-white max-w-lg">
-          <div className="mb-8 p-4 bg-white/10 backdrop-blur-md rounded-2xl w-fit">
-            <UserPlus size={48} className="text-white" />
+          {/* Logo */}
+          <div className="flex items-center gap-3 mb-12">
+            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+              <Code2 className="w-7 h-7 text-white" />
+            </div>
+            <span className="text-2xl font-bold text-white">StudySphere</span>
           </div>
+
           <h1 className="text-5xl font-bold mb-6 leading-tight">
-            Start Your Journey Today
+            Start your journey to
+            <span className="block text-orange-500">academic excellence</span>
           </h1>
-          <p className="text-xl text-purple-100 mb-8 leading-relaxed">
-            Create an account to access personalized learning paths, track your attendance, and collaborate with peers in real-time.
+
+          <p className="text-lg text-gray-400 mb-12 leading-relaxed">
+            Join thousands of students already mastering their subjects with AI-powered tools and collaborative learning.
           </p>
+
+          {/* Benefits */}
           <div className="space-y-4">
-            <div className="flex items-center gap-3 bg-white/10 backdrop-blur rounded-xl p-4">
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">🚀</div>
+            <div className="flex items-start gap-4 bg-gray-800/30 backdrop-blur border border-gray-700 rounded-xl p-5">
+              <div className="w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center shrink-0">
+                <Zap className="w-6 h-6 text-orange-400" />
+              </div>
               <div>
-                <h3 className="font-semibold">AI-Powered Learning</h3>
-                <p className="text-sm text-purple-100">Personalized automated roadmaps</p>
+                <h3 className="font-semibold text-white mb-1 text-lg">AI-Powered Learning</h3>
+                <p className="text-sm text-gray-400 leading-relaxed">Get personalized roadmaps and quizzes tailored to your goals</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 bg-white/10 backdrop-blur rounded-xl p-4">
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">🤝</div>
+
+            <div className="flex items-start gap-4 bg-gray-800/30 backdrop-blur border border-gray-700 rounded-xl p-5">
+              <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center shrink-0">
+                <Users className="w-6 h-6 text-blue-400" />
+              </div>
               <div>
-                <h3 className="font-semibold">Community</h3>
-                <p className="text-sm text-purple-100">Study together in virtual rooms</p>
+                <h3 className="font-semibold text-white mb-1 text-lg">Study Together</h3>
+                <p className="text-sm text-gray-400 leading-relaxed">Join live study rooms and collaborate with peers globally</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 bg-gray-800/30 backdrop-blur border border-gray-700 rounded-xl p-5">
+              <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center shrink-0">
+                <TrendingUp className="w-6 h-6 text-green-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white mb-1 text-lg">Track Progress</h3>
+                <p className="text-sm text-gray-400 leading-relaxed">Monitor attendance, grades, and learning milestones</p>
               </div>
             </div>
           </div>
@@ -88,10 +113,19 @@ const Register = () => {
       {/* Right Side - Register Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
         <div className="w-full max-w-md space-y-8">
+
+          {/* Header */}
           <div className="text-center lg:text-left">
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Create Account</h2>
-            <p className="text-slate-500 dark:text-slate-400">
-              Join StudySphere for free
+            <div className="lg:hidden flex items-center justify-center gap-2 mb-8">
+              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
+                <Code2 className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-2xl font-bold text-white">StudySphere</span>
+            </div>
+
+            <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
+            <p className="text-gray-400">
+              Get started with StudySphere for free
             </p>
           </div>
 
@@ -111,82 +145,88 @@ const Register = () => {
             />
           </div>
 
+          {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-slate-200 dark:border-slate-700" />
+              <span className="w-full border-t border-gray-800" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-slate-50 dark:bg-slate-900 px-2 text-slate-500 dark:text-slate-400">
+              <span className="bg-[#0a0e1a] px-3 text-gray-500">
                 Or register with email
               </span>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-900 dark:text-slate-200" htmlFor="name">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required
-                    placeholder="John Doe"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder:text-slate-400"
-                  />
-                </div>
-              </div>
+          {/* Register Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-900 dark:text-slate-200" htmlFor="email">
-                  Email
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="name@example.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder:text-slate-400"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-900 dark:text-slate-200" htmlFor="password">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    required
-                    minLength={6}
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder:text-slate-400"
-                  />
-                </div>
+            {/* Name */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300" htmlFor="name">
+                Full Name
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-3.5 h-5 w-5 text-gray-500" />
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  placeholder="John Doe"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full pl-11 pr-4 py-3 rounded-lg border border-gray-800 bg-[#111827] text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all placeholder:text-gray-500"
+                />
               </div>
             </div>
 
+            {/* Email */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300" htmlFor="email">
+                Email
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3.5 h-5 w-5 text-gray-500" />
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="name@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full pl-11 pr-4 py-3 rounded-lg border border-gray-800 bg-[#111827] text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all placeholder:text-gray-500"
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300" htmlFor="password">
+                Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3.5 h-5 w-5 text-gray-500" />
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  minLength={6}
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full pl-11 pr-4 py-3 rounded-lg border border-gray-800 bg-[#111827] text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all placeholder:text-gray-500"
+                />
+              </div>
+              <p className="text-xs text-gray-500">Must be at least 6 characters</p>
+            </div>
+
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/25"
+              className="w-full flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-4 rounded-lg transition-all transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-orange-500/20"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -199,10 +239,11 @@ const Register = () => {
             </button>
           </form>
 
-          <p className="text-center text-sm text-slate-600 dark:text-slate-400">
+          {/* Sign In Link */}
+          <p className="text-center text-sm text-gray-400">
             Already have an account?{' '}
-            <Link to="/login" className="font-semibold text-purple-600 hover:text-purple-500 dark:text-purple-400 hover:underline transition-colors">
-              Sign In
+            <Link to="/login" className="font-semibold text-orange-500 hover:text-orange-400 transition-colors">
+              Sign in
             </Link>
           </p>
         </div>

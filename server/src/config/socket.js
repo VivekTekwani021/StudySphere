@@ -6,7 +6,21 @@ let io;
 const initializeSocket = (server) => {
     io = new Server(server, {
         cors: {
-            origin: ["http://localhost:5173", "http://localhost:3000"],
+            origin: (origin, callback) => {
+                const allowedOrigins = [
+                    "http://localhost:5173",
+                    "http://localhost:3000",
+                    "http://localhost:5174",
+                    process.env.FRONTEND_URL
+                ];
+                // Allow requests with no origin (like mobile apps or curl requests)
+                if (!origin) return callback(null, true);
+                if (allowedOrigins.indexOf(origin) !== -1 || origin.startsWith("http://192.168.") || origin.startsWith("http://localhost")) { // Allow local network & all localhost ports
+                    callback(null, true);
+                } else {
+                    callback(null, true); // Permissive for dev mode
+                }
+            },
             methods: ["GET", "POST"],
             credentials: true,
         },

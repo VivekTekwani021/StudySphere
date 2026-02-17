@@ -1,271 +1,121 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BookOpen, Youtube, FileText, Sparkles, ArrowRight } from "lucide-react";
+import { BookOpen, Youtube, FileText, Sparkles, ArrowRight, Zap, GraduationCap } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
-import { clsx } from "clsx";
 
 const services = [
   {
     id: "content",
-    title: "Learning Content",
-    subtitle: "AI-Powered Explanations",
-    description: "Get step-by-step explanations of any topic with real-world analogies and code examples powered by AI.",
+    title: "AI Explanations",
+    description: "Get instant step-by-step explanations, analogies, and code examples for any topic.",
     icon: BookOpen,
     path: "/learning/content",
-    gradient: "from-violet-500 via-purple-500 to-fuchsia-500",
-    shadowColor: "shadow-purple-500/25",
-    iconBg: "bg-purple-100",
-    iconBgDark: "bg-purple-900/30",
-    iconColor: "text-purple-600",
-    iconColorDark: "text-purple-400",
-    features: ["Step-by-step breakdown", "Real-world analogies", "Code examples"],
+    color: "text-blue-500",
+    bgColor: "bg-blue-500/10",
+    borderColor: "border-blue-500/20",
+    hoverBorder: "hover:border-blue-500/50"
   },
   {
     id: "youtube",
-    title: "YouTube Learning",
-    subtitle: "Video-Based Learning",
-    description: "Search and watch curated educational videos on any topic directly within the platform.",
+    title: "Video Learning",
+    description: "Curated educational videos embedded directly in your workspace without distractions.",
     icon: Youtube,
     path: "/learning/youtube",
-    gradient: "from-red-500 via-rose-500 to-pink-500",
-    shadowColor: "shadow-red-500/25",
-    iconBg: "bg-red-100",
-    iconBgDark: "bg-red-900/30",
-    iconColor: "text-red-600",
-    iconColorDark: "text-red-400",
-    features: ["Curated videos", "Topic search", "Embedded player"],
+    color: "text-red-500",
+    bgColor: "bg-red-500/10",
+    borderColor: "border-red-500/20",
+    hoverBorder: "hover:border-red-500/50"
   },
   {
     id: "pdf",
-    title: "Generate PDF",
-    subtitle: "Downloadable Notes",
-    description: "Generate comprehensive PDF notes for any topic to study offline or share with friends.",
+    title: "PDF Generator",
+    description: "Convert any topic into comprehensive, beautifully formatted study notes in seconds.",
     icon: FileText,
     path: "/learning/pdf",
-    gradient: "from-emerald-500 via-teal-500 to-cyan-500",
-    shadowColor: "shadow-emerald-500/25",
-    iconBg: "bg-emerald-100",
-    iconBgDark: "bg-emerald-900/30",
-    iconColor: "text-emerald-600",
-    iconColorDark: "text-emerald-400",
-    features: ["Offline study", "Quick revision", "Easy sharing"],
+    color: "text-emerald-500",
+    bgColor: "bg-emerald-500/10",
+    borderColor: "border-emerald-500/20",
+    hoverBorder: "hover:border-emerald-500/50"
   },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.15, delayChildren: 0.1 },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 40, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { type: "spring", stiffness: 100, damping: 15 },
-  },
-};
-
-const headerVariants = {
-  hidden: { opacity: 0, y: -30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring", stiffness: 100, damping: 20 },
-  },
-};
-
-const floatingVariants = {
-  animate: {
-    y: [-5, 5, -5],
-    transition: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-  },
-};
-
 export default function LearningRoom() {
-  const nav = useNavigate();
-  const { isDark } = useTheme();
+  const navigate = useNavigate();
 
   return (
-    <div className={clsx(
-      "min-h-screen p-6 md:p-10 transition-colors duration-200",
-      isDark
-        ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
-        : "bg-gradient-to-br from-slate-50 via-white to-slate-100"
-    )}>
+    <div className="min-h-screen bg-black text-white p-6 md:p-10 font-sans">
+
       {/* Header Section */}
-      <motion.div
-        variants={headerVariants}
-        initial="hidden"
-        animate="visible"
-        className="max-w-6xl mx-auto mb-12"
-      >
-        <div className="flex items-center gap-3 mb-3">
-          <motion.div
-            variants={floatingVariants}
-            animate="animate"
-            className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg shadow-indigo-500/30"
-          >
-            <Sparkles className="w-6 h-6 text-white" />
-          </motion.div>
-          <span className={clsx(
-            "text-sm font-medium px-3 py-1 rounded-full",
-            isDark ? "text-indigo-400 bg-indigo-900/30" : "text-indigo-600 bg-indigo-50"
-          )}>
-            Learning Hub
-          </span>
+      <div className="max-w-6xl mx-auto mb-16 text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#141414] border border-[#1F1F1F] text-xs font-medium text-orange-500 mb-6">
+          <Sparkles className="w-3 h-3" />
+          <span>AI-Powered Learning Hub</span>
         </div>
 
-        <h1 className={clsx(
-          "text-4xl md:text-5xl font-bold bg-clip-text text-transparent mb-4",
-          isDark
-            ? "bg-gradient-to-r from-white via-slate-200 to-slate-300"
-            : "bg-gradient-to-r from-slate-900 via-slate-700 to-slate-800"
-        )}>
-          Learning Room
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6">
+          Master any subject <span className="text-gray-500">faster.</span>
         </h1>
-        <p className={clsx("text-lg max-w-2xl", isDark ? "text-slate-400" : "text-slate-600")}>
-          Choose your preferred learning method and start mastering new concepts today.
+
+        <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+          Choose your preferred way to learn. Whether reading, watching, or revising offline,
+          StudySphere adapts to your style.
         </p>
-      </motion.div>
+      </div>
 
-      {/* Service Cards Grid */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-      >
-        {services.map((service) => (
-          <ServiceCard key={service.id} service={service} onNavigate={nav} isDark={isDark} />
+      {/* Services Grid */}
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        {services.map((service, index) => (
+          <motion.button
+            key={service.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            onClick={() => navigate(service.path)}
+            className={`group relative text-left p-8 rounded-2xl bg-[#0A0A0A] border ${service.borderColor} ${service.hoverBorder} transition-all duration-300 hover:bg-[#141414] hover:shadow-2xl`}
+          >
+            <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-6 ${service.bgColor}`}>
+              <service.icon className={`w-7 h-7 ${service.color}`} />
+            </div>
+
+            <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-orange-500 transition-colors">
+              {service.title}
+            </h3>
+
+            <p className="text-gray-400 mb-8 leading-relaxed">
+              {service.description}
+            </p>
+
+            <div className="flex items-center gap-2 text-sm font-semibold text-white group-hover:translate-x-2 transition-transform">
+              Start Learning <ArrowRight className="w-4 h-4" />
+            </div>
+
+            {/* Subtle Gradient Glow */}
+            <div className={`absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity bg-gradient-to-br ${service.color.replace('text-', 'from-').replace('500', '500/20')} to-transparent -z-10`} />
+          </motion.button>
         ))}
-      </motion.div>
+      </div>
 
-      {/* Background Decorations */}
-      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className={clsx(
-          "absolute top-20 right-20 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl animate-pulse",
-          isDark ? "bg-purple-900/30 opacity-50" : "bg-purple-200 opacity-30"
-        )} />
-        <div className={clsx(
-          "absolute bottom-20 left-20 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl animate-pulse",
-          isDark ? "bg-cyan-900/30 opacity-50" : "bg-cyan-200 opacity-30"
-        )} style={{ animationDelay: '1s' }} />
-        <div className={clsx(
-          "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl animate-pulse",
-          isDark ? "bg-pink-900/20 opacity-40" : "bg-pink-200 opacity-20"
-        )} style={{ animationDelay: '2s' }} />
+      {/* Stats / Trust Section */}
+      <div className="max-w-6xl mx-auto mt-20 pt-10 border-t border-[#1F1F1F]">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="text-center md:text-left">
+            <p className="text-3xl font-bold text-white mb-1">100+</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest">Topics Covered</p>
+          </div>
+          <div className="text-center md:text-left">
+            <p className="text-3xl font-bold text-white mb-1">AI</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest">Real-time Analysis</p>
+          </div>
+          <div className="text-center md:text-left">
+            <p className="text-3xl font-bold text-white mb-1">Instant</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest">PDF Generation</p>
+          </div>
+          <div className="text-center md:text-left">
+            <p className="text-3xl font-bold text-white mb-1">HD</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest">Video Content</p>
+          </div>
+        </div>
       </div>
     </div>
-  );
-}
-
-function ServiceCard({ service, onNavigate, isDark }) {
-  const Icon = service.icon;
-
-  return (
-    <motion.div
-      variants={cardVariants}
-      whileHover={{
-        y: -8,
-        scale: 1.02,
-        transition: { type: "spring", stiffness: 300, damping: 20 }
-      }}
-      whileTap={{ scale: 0.98 }}
-      onClick={() => onNavigate(service.path)}
-      className={clsx(
-        "relative group cursor-pointer rounded-2xl p-6 border shadow-lg transition-shadow duration-300 overflow-hidden",
-        isDark
-          ? "bg-slate-800 border-slate-700 hover:shadow-2xl"
-          : "bg-white border-slate-200/60",
-        service.shadowColor,
-        `hover:shadow-2xl hover:${service.shadowColor}`
-      )}
-    >
-      {/* Gradient Border on Hover */}
-      <div className={`
-        absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100
-        bg-gradient-to-br ${service.gradient}
-        transition-opacity duration-300
-        -z-10
-      `} />
-      <div className={clsx(
-        "absolute inset-[2px] rounded-2xl -z-10",
-        isDark ? "bg-slate-800" : "bg-white"
-      )} />
-
-      {/* Icon */}
-      <motion.div
-        whileHover={{ rotate: [0, -10, 10, 0] }}
-        transition={{ duration: 0.5 }}
-        className={clsx(
-          "w-14 h-14 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300",
-          isDark ? service.iconBgDark : service.iconBg
-        )}
-      >
-        <Icon className={clsx("w-7 h-7", isDark ? service.iconColorDark : service.iconColor)} />
-      </motion.div>
-
-      {/* Content */}
-      <div className="space-y-3">
-        <div>
-          <span className={clsx("text-sm font-medium block mb-1", isDark ? "text-slate-400" : "text-slate-500")}>
-            {service.subtitle}
-          </span>
-          <h3 className={clsx(
-            "text-xl font-bold transition-all",
-            isDark ? "text-white" : "text-slate-900"
-          )}>
-            {service.title}
-          </h3>
-        </div>
-
-        <p className={clsx("text-sm leading-relaxed", isDark ? "text-slate-400" : "text-slate-600")}>
-          {service.description}
-        </p>
-
-        {/* Features */}
-        <div className="flex flex-wrap gap-2 pt-2">
-          {service.features.map((feature, index) => (
-            <motion.span
-              key={index}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1 }}
-              className={clsx(
-                "text-xs font-medium px-2.5 py-1 rounded-full",
-                isDark ? "text-slate-400 bg-slate-700" : "text-slate-500 bg-slate-100"
-              )}
-            >
-              {feature}
-            </motion.span>
-          ))}
-        </div>
-      </div>
-
-      {/* Hover Arrow */}
-      <motion.div
-        initial={{ opacity: 0, x: -10 }}
-        whileHover={{ opacity: 1, x: 0 }}
-        className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        <div className={`
-          w-10 h-10 rounded-full bg-gradient-to-br ${service.gradient}
-          flex items-center justify-center
-          shadow-lg
-        `}>
-          <ArrowRight className="w-5 h-5 text-white" />
-        </div>
-      </motion.div>
-
-      {/* Shimmer Effect */}
-      <div className="absolute inset-0 -z-5 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-      </div>
-    </motion.div>
   );
 }

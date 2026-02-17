@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
   Plus, Trash2, CheckCircle, Loader2, BookOpen,
-  TrendingUp, Calendar, ChevronLeft, ChevronRight, X
+  TrendingUp, Calendar, ChevronLeft, ChevronRight, X, AlertTriangle
 } from 'lucide-react';
 import { attendanceApi } from '../../api/attendance.api';
-import { useTheme } from '../../context/ThemeContext';
 import toast from 'react-hot-toast';
 import { clsx } from 'clsx';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const CollegeAttendance = () => {
-  const { isDark } = useTheme();
   const [subjects, setSubjects] = useState([]);
   const [newSubject, setNewSubject] = useState('');
   const [loading, setLoading] = useState(true);
@@ -117,9 +116,9 @@ const CollegeAttendance = () => {
           key={day}
           className={clsx(
             "w-8 h-8 flex items-center justify-center text-sm rounded-full transition-colors",
-            isPresent && "bg-emerald-500 text-white font-medium",
-            isToday && !isPresent && "ring-2 ring-blue-400",
-            !isPresent && (isDark ? "text-slate-400" : "text-slate-600")
+            isPresent && "bg-emerald-500 text-black font-bold shadow-lg shadow-emerald-500/20",
+            isToday && !isPresent && "ring-1 ring-orange-500 text-orange-500",
+            !isPresent && !isToday && "text-gray-500 hover:text-white"
           )}
         >
           {day}
@@ -128,189 +127,206 @@ const CollegeAttendance = () => {
     }
 
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setCalendarSubject(null)}>
-        <div
-          className={clsx("rounded-2xl p-6 shadow-2xl max-w-sm w-full mx-4", isDark ? "bg-slate-800" : "bg-white")}
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setCalendarSubject(null)}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-[#0A0A0A] border border-[#1F1F1F] rounded-2xl p-6 shadow-2xl max-w-sm w-full mx-4"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-6 border-b border-[#1F1F1F] pb-4">
             <div>
-              <h3 className={clsx("text-lg font-bold", isDark ? "text-white" : "text-slate-900")}>{subject.subjectName}</h3>
-              <p className={clsx("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>{subject.present} present days</p>
+              <h3 className="text-lg font-bold text-white">{subject.subjectName}</h3>
+              <p className="text-gray-400 text-xs">Attendance History</p>
             </div>
-            <button onClick={() => setCalendarSubject(null)} className={clsx("p-2 rounded-lg transition-colors", isDark ? "hover:bg-slate-700" : "hover:bg-slate-100")}>
-              <X className={clsx("w-5 h-5", isDark ? "text-slate-400" : "text-slate-500")} />
+            <button onClick={() => setCalendarSubject(null)} className="p-2 bg-[#141414] hover:bg-[#1F1F1F] text-gray-400 hover:text-white rounded-lg transition-colors">
+              <X className="w-4 h-4" />
             </button>
           </div>
 
           <div className="flex items-center justify-between mb-4">
-            <button onClick={prevMonth} className={clsx("p-2 rounded-lg transition-colors", isDark ? "hover:bg-slate-700" : "hover:bg-slate-100")}>
-              <ChevronLeft className={clsx("w-5 h-5", isDark ? "text-slate-400" : "text-slate-600")} />
+            <button onClick={prevMonth} className="p-2 hover:bg-[#141414] text-gray-400 hover:text-white rounded-lg transition-colors">
+              <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className={clsx("font-semibold", isDark ? "text-white" : "text-slate-900")}>
+            <span className="font-bold text-white uppercase tracking-wider text-sm">
               {monthNames[calendarMonth.getMonth()]} {calendarMonth.getFullYear()}
             </span>
-            <button onClick={nextMonth} className={clsx("p-2 rounded-lg transition-colors", isDark ? "hover:bg-slate-700" : "hover:bg-slate-100")}>
-              <ChevronRight className={clsx("w-5 h-5", isDark ? "text-slate-400" : "text-slate-600")} />
+            <button onClick={nextMonth} className="p-2 hover:bg-[#141414] text-gray-400 hover:text-white rounded-lg transition-colors">
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
 
           <div className="grid grid-cols-7 gap-1 mb-2">
             {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
-              <div key={i} className={clsx("w-8 h-8 flex items-center justify-center text-xs font-medium", isDark ? "text-slate-500" : "text-slate-400")}>{d}</div>
+              <div key={i} className="w-8 h-8 flex items-center justify-center text-[10px] font-bold text-gray-600 uppercase tracking-wider">{d}</div>
             ))}
           </div>
 
           <div className="grid grid-cols-7 gap-1">{days}</div>
 
-          <div className={clsx("flex items-center gap-4 mt-4 pt-4 border-t", isDark ? "border-slate-700" : "border-slate-100")}>
+          <div className="flex items-center gap-6 mt-6 pt-4 border-t border-[#1F1F1F]">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-emerald-500" />
-              <span className={clsx("text-xs", isDark ? "text-slate-400" : "text-slate-600")}>Present</span>
+              <div className="w-3 h-3 rounded-full bg-emerald-500" />
+              <span className="text-xs text-gray-400">Present</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full border-2 border-blue-400" />
-              <span className={clsx("text-xs", isDark ? "text-slate-400" : "text-slate-600")}>Today</span>
+              <div className="w-3 h-3 rounded-full ring-1 ring-orange-500" />
+              <span className="text-xs text-gray-400">Today</span>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     );
   };
 
   const getPercentageColor = (percentage) => {
     if (percentage >= 75) return 'text-emerald-500';
-    if (percentage >= 50) return 'text-amber-500';
+    if (percentage >= 50) return 'text-orange-500';
     return 'text-red-500';
+  };
+
+  const getPercentageBg = (percentage) => {
+    if (percentage >= 75) return 'bg-emerald-500 shadow-emerald-500/50';
+    if (percentage >= 50) return 'bg-orange-500 shadow-orange-500/50';
+    return 'bg-red-500 shadow-red-500/50';
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Add Subject Form */}
-      <form onSubmit={handleAddSubject} className="flex gap-3">
+      <div className="bg-[#0A0A0A] border border-[#1F1F1F] p-1 rounded-xl flex gap-2 max-w-lg">
         <input
           type="text"
           value={newSubject}
           onChange={(e) => setNewSubject(e.target.value)}
-          placeholder="Enter subject name..."
-          className={clsx(
-            "flex-1 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors",
-            isDark
-              ? "bg-slate-800 border-slate-700 text-white placeholder-slate-400"
-              : "bg-white border-slate-200 text-slate-900 placeholder-slate-400"
-          )}
+          placeholder="New subject (e.g. Operating Systems)"
+          className="flex-1 px-4 py-3 bg-transparent text-white placeholder-gray-600 focus:outline-none text-sm font-medium rounded-lg"
         />
         <button
-          type="submit"
+          onClick={handleAddSubject}
           disabled={adding || !newSubject.trim()}
-          className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
+          className="px-6 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-bold text-sm transition-all disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-orange-900/20"
         >
-          {adding ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
+          {adding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
           Add
         </button>
-      </form>
+      </div>
 
       {/* Subjects Grid */}
       {subjects.length === 0 ? (
-        <div className={clsx("text-center py-12 rounded-2xl border", isDark ? "bg-slate-800/50 border-slate-700" : "bg-white border-slate-200")}>
-          <BookOpen className={clsx("w-12 h-12 mx-auto mb-4", isDark ? "text-slate-600" : "text-slate-300")} />
-          <h3 className={clsx("text-lg font-semibold mb-2", isDark ? "text-white" : "text-slate-900")}>No subjects yet</h3>
-          <p className={clsx(isDark ? "text-slate-400" : "text-slate-500")}>Add your first subject above to start tracking</p>
+        <div className="text-center py-20 rounded-2xl border border-dashed border-[#1F1F1F] bg-[#0A0A0A]">
+          <div className="w-16 h-16 bg-[#141414] rounded-full flex items-center justify-center mx-auto mb-4">
+            <BookOpen className="w-8 h-8 text-gray-600" />
+          </div>
+          <h3 className="text-lg font-bold text-white mb-2">No subjects yet</h3>
+          <p className="text-gray-500 text-sm max-w-xs mx-auto">Add your subjects above to start tracking your attendance goals.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {subjects.map((subject) => (
-            <div
-              key={subject._id}
-              className={clsx(
-                "rounded-2xl border overflow-hidden transition-shadow hover:shadow-lg",
-                isDark ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"
-              )}
-            >
-              <div className={clsx("p-4 border-b flex justify-between items-start", isDark ? "border-slate-700" : "border-slate-100")}>
-                <div
-                  className="flex items-center gap-2 cursor-pointer hover:text-blue-500 transition-colors"
-                  onClick={() => { setCalendarSubject(subject); setCalendarMonth(new Date()); }}
-                >
-                  <h3 className={clsx("font-semibold text-lg", isDark ? "text-white" : "text-slate-900")}>{subject.subjectName}</h3>
-                  <Calendar className={clsx("w-4 h-4", isDark ? "text-slate-500" : "text-slate-400")} />
-                </div>
-                <button
-                  onClick={() => handleDeleteSubject(subject.subjectName)}
-                  className={clsx("p-2 rounded-lg transition-colors", isDark ? "hover:bg-red-500/20 text-slate-400 hover:text-red-400" : "hover:bg-red-50 text-slate-400 hover:text-red-500")}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="p-4 space-y-4">
-                {/* Stats */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className={getPercentageColor(subject.percentage)} />
-                    <span className={clsx("text-3xl font-bold", getPercentageColor(subject.percentage))}>
-                      {subject.percentage}%
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <p className={clsx("text-lg font-semibold", isDark ? "text-white" : "text-slate-900")}>
-                      {subject.present}/{subject.total} <span className="text-sm font-normal">Classes</span>
-                    </p>
-                    <p className={clsx("text-xs", isDark ? "text-slate-400" : "text-slate-500")}>
-                      Absent: {subject.total - subject.present}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Progress Bar */}
-                <div className={clsx("h-2 rounded-full overflow-hidden mb-4", isDark ? "bg-slate-700" : "bg-slate-100")}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <AnimatePresence>
+            {subjects.map((subject) => (
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                key={subject._id}
+                className="bg-[#0A0A0A] border border-[#1F1F1F] rounded-2xl overflow-hidden hover:border-orange-500/20 transition-all duration-300 group shadow-lg"
+              >
+                <div className="p-6 border-b border-[#1F1F1F] flex justify-between items-start bg-[#141414]/30">
                   <div
-                    className={clsx("h-full rounded-full transition-all",
-                      subject.percentage >= 75 ? "bg-emerald-500" :
-                        subject.percentage >= 50 ? "bg-amber-500" : "bg-red-500"
-                    )}
-                    style={{ width: `${subject.percentage}%` }}
-                  />
+                    className="cursor-pointer group-hover:text-orange-500 transition-colors"
+                    onClick={() => { setCalendarSubject(subject); setCalendarMonth(new Date()); }}
+                  >
+                    <h3 className="font-bold text-lg text-white mb-1 line-clamp-1">{subject.subjectName}</h3>
+                    <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 uppercase tracking-wider group-hover:text-orange-500/70 transition-colors">
+                      <Calendar className="w-3 h-3" /> View Calendar
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteSubject(subject.subjectName)}
+                    className="p-2 rounded-lg hover:bg-red-500/10 text-gray-600 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    onClick={() => handleMarkAttendance(subject.subjectName, 'Present')}
-                    disabled={markingSubject === subject.subjectName}
-                    className="flex items-center justify-center gap-2 py-3 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-colors font-medium disabled:opacity-50 shadow-md"
-                  >
-                    {markingSubject === subject.subjectName ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <CheckCircle className="w-4 h-4" />
-                    )}
-                    Present
-                  </button>
-                  <button
-                    onClick={() => handleMarkAttendance(subject.subjectName, 'Absent')}
-                    disabled={markingSubject === subject.subjectName}
-                    className="flex items-center justify-center gap-2 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-medium disabled:opacity-50 shadow-md"
-                  >
-                    {markingSubject === subject.subjectName ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <X className="w-4 h-4" />
-                    )}
-                    Absent
-                  </button>
+                <div className="p-6">
+                  {/* Visual Stats */}
+                  <div className="flex items-end justify-between mb-6">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <TrendingUp className={clsx("w-4 h-4", getPercentageColor(subject.percentage))} />
+                        <span className="text-xs font-bold text-gray-500 uppercase">Attendance</span>
+                      </div>
+                      <span className={clsx("text-4xl font-bold tracking-tight", getPercentageColor(subject.percentage))}>
+                        {subject.percentage}%
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-white">
+                        {subject.present}<span className="text-gray-600 text-sm font-medium mx-1">/</span>{subject.total}
+                      </p>
+                      <p className="text-[10px] uppercase font-bold text-gray-600 tracking-wider">Classes Attended</p>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="h-1.5 rounded-full bg-[#1F1F1F] overflow-hidden mb-6">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${subject.percentage}%` }}
+                      className={clsx("h-full rounded-full transition-all shadow-[0_0_10px_rgba(0,0,0,0.5)]", getPercentageBg(subject.percentage))}
+                    />
+                  </div>
+
+                  {/* Warning if low attendance */}
+                  {subject.percentage < 75 && (
+                    <div className="flex items-center gap-2 mb-6 px-3 py-2 bg-red-500/5 border border-red-500/10 rounded-lg">
+                      <AlertTriangle className="w-4 h-4 text-red-500" />
+                      <span className="text-xs text-red-400 font-medium">Below Target (75%)</span>
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => handleMarkAttendance(subject.subjectName, 'Present')}
+                      disabled={markingSubject === subject.subjectName}
+                      className="flex items-center justify-center gap-2 py-3 bg-[#141414] hover:bg-[#1F1F1F] border border-[#1F1F1F] hover:border-emerald-500/30 hover:text-emerald-500 text-gray-300 rounded-xl font-bold text-sm transition-all disabled:opacity-50 group/btn"
+                    >
+                      {markingSubject === subject.subjectName ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <CheckCircle className="w-4 h-4 text-gray-500 group-hover/btn:text-emerald-500 transition-colors" />
+                      )}
+                      Present
+                    </button>
+                    <button
+                      onClick={() => handleMarkAttendance(subject.subjectName, 'Absent')}
+                      disabled={markingSubject === subject.subjectName}
+                      className="flex items-center justify-center gap-2 py-3 bg-[#141414] hover:bg-[#1F1F1F] border border-[#1F1F1F] hover:border-red-500/30 hover:text-red-500 text-gray-300 rounded-xl font-bold text-sm transition-all disabled:opacity-50 group/btn"
+                    >
+                      {markingSubject === subject.subjectName ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <X className="w-4 h-4 text-gray-500 group-hover/btn:text-red-500 transition-colors" />
+                      )}
+                      Absent
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       )}
 

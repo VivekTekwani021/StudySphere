@@ -3,33 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Brain, Clock, ArrowRight, ArrowLeft, CheckCircle2,
-  Circle, Loader2, Flag, AlertCircle
+  Circle, Loader2, Flag, AlertCircle, HelpCircle
 } from "lucide-react";
 import { quizApi } from "../../api/quizApi";
-import { useTheme } from "../../context/ThemeContext";
 import toast from "react-hot-toast";
-import { clsx } from "clsx";
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.05 },
-  },
-};
-
-const optionVariants = {
-  hidden: { opacity: 0, x: -20 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { type: "spring", stiffness: 100, damping: 15 }
-  },
-};
 
 const QuizAttempt = () => {
   const navigate = useNavigate();
-  const { isDark } = useTheme();
 
   const [quizId, setQuizId] = useState(null);
   const [topic, setTopic] = useState("");
@@ -82,24 +62,11 @@ const QuizAttempt = () => {
 
   if (!questions) {
     return (
-      <div className={clsx(
-        "min-h-screen flex items-center justify-center",
-        isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : "bg-gradient-to-br from-indigo-50 via-white to-violet-50"
-      )}>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-16 h-16 mx-auto mb-4"
-          >
-            <Brain className={clsx("w-16 h-16", isDark ? "text-indigo-400" : "text-indigo-500")} />
-          </motion.div>
-          <p className={isDark ? "text-slate-400" : "text-slate-600"}>Loading questions...</p>
-        </motion.div>
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <div className="text-center">
+          <Loader2 className="w-10 h-10 text-orange-500 animate-spin mx-auto mb-4" />
+          <p className="text-gray-500 text-sm">Loading quiz...</p>
+        </div>
       </div>
     );
   }
@@ -146,243 +113,123 @@ const QuizAttempt = () => {
     }
   };
 
-  const getDifficultyColor = () => {
-    switch (difficulty) {
-      case 'easy': return isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-700';
-      case 'hard': return isDark ? 'bg-rose-900/30 text-rose-400' : 'bg-rose-100 text-rose-700';
-      default: return isDark ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-100 text-amber-700';
-    }
-  };
-
   return (
-    <div className={clsx(
-      "min-h-screen p-4 md:p-8 transition-colors duration-200",
-      isDark ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" : "bg-gradient-to-br from-indigo-50 via-white to-violet-50"
-    )}>
-      <div className="max-w-3xl mx-auto">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={clsx(
-            "rounded-2xl p-4 md:p-6 shadow-lg border mb-6",
-            isDark ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"
-          )}
-        >
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className={clsx("p-2 rounded-xl", isDark ? "bg-indigo-900/30" : "bg-indigo-100")}>
-                <Brain className={clsx("w-6 h-6", isDark ? "text-indigo-400" : "text-indigo-600")} />
-              </div>
-              <div>
-                <h1 className={clsx("font-bold", isDark ? "text-white" : "text-slate-900")}>{topic}</h1>
-                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${getDifficultyColor()}`}>
-                  {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
-                </span>
-              </div>
-            </div>
+    <div className="min-h-screen bg-black text-white p-6 md:p-10 font-sans flex flex-col items-center">
 
-            <div className="flex items-center gap-4">
-              <div className={clsx("flex items-center gap-2", isDark ? "text-slate-400" : "text-slate-600")}>
-                <Clock className="w-4 h-4" />
-                <span className="font-mono text-sm">{formatTime(timeElapsed)}</span>
-              </div>
-              <div className={clsx("text-sm", isDark ? "text-slate-400" : "text-slate-600")}>
-                <span className="font-semibold text-indigo-500">{answeredCount}</span>/{questions.length} answered
-              </div>
-            </div>
-          </div>
+      <div className="w-full max-w-4xl space-y-8">
 
-          {/* Progress Bar */}
-          <div className="mt-4">
-            <div className={clsx("h-2 rounded-full overflow-hidden", isDark ? "bg-slate-700" : "bg-slate-100")}>
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full"
-                transition={{ duration: 0.3 }}
-              />
-            </div>
-          </div>
-
-          {/* Question Navigation Dots */}
-          <div className="flex flex-wrap gap-2 mt-4">
-            {questions.map((_, idx) => (
-              <motion.button
-                key={idx}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setCurrentIndex(idx)}
-                className={clsx(
-                  "w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-all",
-                  idx === currentIndex
-                    ? 'bg-indigo-500 text-white shadow-lg'
-                    : answers[idx] !== null
-                      ? isDark ? 'bg-emerald-900/30 text-emerald-400 border-2 border-emerald-500/50' : 'bg-emerald-100 text-emerald-700 border-2 border-emerald-300'
-                      : isDark ? 'bg-slate-700 text-slate-400 hover:bg-slate-600' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                )}
-              >
-                {idx + 1}
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Question Card */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentIndex}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.3 }}
-            className={clsx(
-              "rounded-2xl p-6 md:p-8 shadow-lg border",
-              isDark ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"
-            )}
-          >
-            {/* Question Number */}
-            <div className="flex items-center gap-2 mb-4">
-              <span className={clsx(
-                "text-sm font-medium px-3 py-1 rounded-full",
-                isDark ? "text-indigo-400 bg-indigo-900/30" : "text-indigo-600 bg-indigo-50"
-              )}>
-                Question {currentIndex + 1} of {questions.length}
+        {/* Header Bar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#1F1F1F] pb-6">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <h1 className="text-xl font-bold tracking-tight text-white">{topic}</h1>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#1F1F1F] text-gray-400 border border-[#333]">
+                {difficulty}
               </span>
-              {answers[currentIndex] === null && (
-                <span className={clsx(
-                  "text-xs px-2 py-1 rounded-full flex items-center gap-1",
-                  isDark ? "text-amber-400 bg-amber-900/30" : "text-amber-600 bg-amber-50"
-                )}>
-                  <AlertCircle className="w-3 h-3" />
-                  Not answered
-                </span>
-              )}
             </div>
+            <p className="text-sm text-gray-500">Question {currentIndex + 1} of {questions.length}</p>
+          </div>
 
-            {/* Question Text */}
-            <h2 className={clsx("text-xl md:text-2xl font-semibold mb-6 leading-relaxed", isDark ? "text-white" : "text-slate-900")}>
-              {currentQuestion.question}
-            </h2>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-orange-500" />
+              <span className="font-mono text-lg font-medium text-white">{formatTime(timeElapsed)}</span>
+            </div>
+            {/* Minimal Progress Bar Widget */}
+            <div className="w-32 h-1.5 bg-[#1F1F1F] rounded-full overflow-hidden">
+              <div className="h-full bg-orange-600 transition-all duration-300" style={{ width: `${progress}%` }}></div>
+            </div>
+          </div>
+        </div>
 
-            {/* Options */}
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="space-y-3"
-            >
-              {currentQuestion.options.map((option, idx) => (
-                <motion.button
+        {/* Main Question Card */}
+        <div className="bg-[#0A0A0A] border border-[#1F1F1F] rounded-2xl p-8 md:p-10 relative">
+
+          {/* Question Text */}
+          <h2 className="text-2xl md:text-3xl font-semibold text-white mb-10 leading-tight">
+            {currentQuestion.question}
+          </h2>
+
+          {/* Options Grid */}
+          <div className="grid grid-cols-1 gap-4">
+            {currentQuestion.options.map((option, idx) => {
+              const isSelected = answers[currentIndex] === idx;
+              return (
+                <button
                   key={idx}
-                  variants={optionVariants}
-                  whileHover={{ scale: 1.01, x: 4 }}
-                  whileTap={{ scale: 0.99 }}
                   onClick={() => handleSelect(idx)}
-                  className={clsx(
-                    "w-full text-left p-4 rounded-xl border-2 transition-all flex items-center gap-4",
-                    answers[currentIndex] === idx
-                      ? isDark ? 'border-indigo-500 bg-indigo-900/30' : 'border-indigo-500 bg-indigo-50'
-                      : isDark ? 'border-slate-600 hover:border-slate-500 hover:bg-slate-700' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                  )}
+                  className={`group relative text-left p-5 rounded-xl border-2 transition-all duration-200 flex items-start gap-4 ${isSelected
+                      ? 'bg-orange-600/10 border-orange-600'
+                      : 'bg-[#141414] border-[#1F1F1F] hover:border-gray-600 hover:bg-[#1A1A1A]'
+                    }`}
                 >
-                  <div className={clsx(
-                    "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
-                    answers[currentIndex] === idx
-                      ? 'bg-indigo-500 text-white'
-                      : isDark ? 'bg-slate-700 text-slate-400' : 'bg-slate-100 text-slate-500'
-                  )}>
-                    {answers[currentIndex] === idx ? (
-                      <CheckCircle2 className="w-5 h-5" />
-                    ) : (
-                      <span className="text-sm font-medium">
-                        {String.fromCharCode(65 + idx)}
-                      </span>
-                    )}
+                  {/* Selection Indicator */}
+                  <div className={`mt-0.5 w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${isSelected ? 'bg-orange-600 border-orange-600' : 'border-gray-600 group-hover:border-gray-400'
+                    }`}>
+                    {isSelected && <div className="w-2.5 h-2.5 bg-white rounded-full" />}
                   </div>
-                  <span className={clsx(
-                    "text-base",
-                    answers[currentIndex] === idx
-                      ? isDark ? 'text-indigo-300 font-medium' : 'text-indigo-900 font-medium'
-                      : isDark ? 'text-slate-300' : 'text-slate-700'
-                  )}>
+
+                  {/* Option Text */}
+                  <span className={`text-lg transition-colors ${isSelected ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
                     {option}
                   </span>
-                </motion.button>
-              ))}
-            </motion.div>
-          </motion.div>
-        </AnimatePresence>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-        {/* Navigation Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex justify-between items-center mt-6"
-        >
-          <motion.button
-            whileHover={{ scale: 1.02, x: -4 }}
-            whileTap={{ scale: 0.98 }}
+        {/* Navigation Footer */}
+        <div className="flex items-center justify-between pt-4">
+          <button
             onClick={handlePrev}
             disabled={currentIndex === 0}
-            className={clsx(
-              "px-6 py-3 rounded-xl flex items-center gap-2 border disabled:opacity-40 disabled:cursor-not-allowed transition-all",
-              isDark ? "text-slate-300 bg-slate-800 border-slate-700 hover:bg-slate-700" : "text-slate-600 bg-white border-slate-200 hover:bg-slate-50"
-            )}
+            className="px-6 py-3 rounded-xl flex items-center gap-2 text-gray-400 hover:text-white disabled:opacity-30 disabled:hover:text-gray-400 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-5 h-5" />
             Previous
-          </motion.button>
+          </button>
 
-          {currentIndex < questions.length - 1 ? (
-            <motion.button
-              whileHover={{ scale: 1.02, x: 4 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleNext}
-              className="px-6 py-3 rounded-xl flex items-center gap-2 bg-indigo-500 text-white hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/30"
-            >
-              Next
-              <ArrowRight className="w-4 h-4" />
-            </motion.button>
-          ) : (
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="px-8 py-3 rounded-xl flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/30 disabled:opacity-50"
-            >
-              {submitting ? (
-                <>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  >
-                    <Loader2 className="w-5 h-5" />
-                  </motion.div>
-                  Submitting...
-                </>
-              ) : (
-                <>
-                  <Flag className="w-5 h-5" />
-                  Submit Quiz
-                </>
-              )}
-            </motion.button>
-          )}
-        </motion.div>
-      </div>
+          <div className="flex gap-2">
+            {/* Question Dots (Optional, for quick nav) */}
+            <div className="hidden md:flex gap-1.5 items-center mr-4">
+              {questions.map((_, i) => (
+                <div key={i} className={`w-2 h-2 rounded-full transition-colors ${i === currentIndex ? 'bg-white' :
+                    answers[i] !== null ? 'bg-orange-500' : 'bg-[#333]'
+                  }`} />
+              ))}
+            </div>
 
-      {/* Background Decoration */}
-      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className={clsx(
-          "absolute top-20 right-20 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl animate-pulse",
-          isDark ? "bg-indigo-900/30 opacity-40" : "bg-indigo-200 opacity-20"
-        )} />
-        <div className={clsx(
-          "absolute bottom-20 left-20 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl animate-pulse",
-          isDark ? "bg-violet-900/30 opacity-40" : "bg-violet-200 opacity-20"
-        )} style={{ animationDelay: '1s' }} />
+            {currentIndex < questions.length - 1 ? (
+              <button
+                onClick={handleNext}
+                className="px-8 py-3 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors flex items-center gap-2"
+              >
+                Next Question
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            ) : (
+              <button
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="px-8 py-3 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 transition-colors flex items-center gap-2 shadow-lg shadow-orange-900/20 disabled:opacity-50"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Flag className="w-5 h-5" />
+                    Submit Results
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+        </div>
+
       </div>
     </div>
   );

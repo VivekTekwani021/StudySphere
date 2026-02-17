@@ -31,6 +31,10 @@
     --accent-gradient-to: 139 92 246;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-[rgb(var(--bg-primary))] text-[rgb(var(--text-primary))] font-sans antialiased transition-colors duration-200;
   }

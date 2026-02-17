@@ -6,24 +6,15 @@ import { clsx } from 'clsx';
 
 const Navbar = ({ toggleSidebar }) => {
   const { user } = useAuth();
-  const { isDark } = useTheme();
+  // Always dark
+  const isDark = true;
 
   return (
-    <header className={clsx(
-      "h-16 border-b shadow-sm flex items-center justify-between px-4 lg:px-8 z-10 transition-colors duration-200",
-      isDark
-        ? "bg-slate-800 border-slate-700"
-        : "bg-white border-gray-100"
-    )}>
+    <header className="h-16 border-b border-[#1F1F1F] shadow-sm flex items-center justify-between px-4 lg:px-8 z-10 transition-colors duration-200 bg-black">
       <div className="flex items-center">
         <button
           onClick={toggleSidebar}
-          className={clsx(
-            "lg:hidden p-2 rounded-md transition-colors",
-            isDark
-              ? "text-slate-400 hover:text-slate-200 hover:bg-slate-700"
-              : "text-gray-400 hover:text-gray-500 hover:bg-gray-100"
-          )}
+          className="lg:hidden p-2 rounded-md transition-colors text-gray-400 hover:text-white hover:bg-[#141414]"
         >
           <Menu className="w-6 h-6" />
         </button>
@@ -33,20 +24,14 @@ const Navbar = ({ toggleSidebar }) => {
         {/* User Info */}
         <div className="flex items-center space-x-3">
           <div className="text-right hidden md:block">
-            <p className={clsx(
-              "text-sm font-medium",
-              isDark ? "text-white" : "text-gray-900"
-            )}>
+            <p className="text-sm font-medium text-white">
               {user?.name}
             </p>
-            <p className={clsx(
-              "text-xs capitalize",
-              isDark ? "text-slate-400" : "text-gray-500"
-            )}>
+            <p className="text-xs capitalize text-gray-500">
               {user?.educationLevel || 'Student'}
             </p>
           </div>
-          <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-md">
+          <div className="h-9 w-9 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-white font-bold shadow-md shadow-orange-900/20 border border-orange-500/20">
             {user?.name?.[0]?.toUpperCase() || 'U'}
           </div>
         </div>

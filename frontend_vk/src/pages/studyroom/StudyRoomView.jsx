@@ -2,34 +2,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { studyRoomApi } from '../../api/studyRoom.api';
 import { useSocket } from '../../hooks/useSocket';
-import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
-import { clsx } from 'clsx';
 import {
-    ArrowLeft,
-    Users,
-    Send,
-    Loader2,
-    Trash2,
-    LogOut,
-    Circle,
-    MessageSquare,
-    Pencil,
-    Key,
-    Copy,
-    Check,
-    Crown,
-    RefreshCw,
-    Settings,
-    X,
-    UserMinus
+    ArrowLeft, Users, Send, Loader2, Trash2, LogOut, Circle,
+    MessageSquare, Pencil, Key, Copy, Check, Crown, RefreshCw,
+    Settings, X
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { clsx } from 'clsx';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const StudyRoomView = () => {
     const { id: roomId } = useParams();
     const navigate = useNavigate();
-    const { isDark } = useTheme();
     const { user } = useAuth();
 
     const [room, setRoom] = useState(null);
@@ -74,7 +59,7 @@ const StudyRoomView = () => {
             canvas.width = canvas.offsetWidth;
             canvas.height = canvas.offsetHeight;
 
-            ctx.strokeStyle = isDark ? '#60a5fa' : '#3b82f6';
+            ctx.strokeStyle = '#f97316'; // Orange accent
             ctx.lineWidth = 2;
             ctx.lineCap = 'round';
 
@@ -89,7 +74,7 @@ const StudyRoomView = () => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
             });
         }
-    }, [activeTab, isDark]);
+    }, [activeTab]);
 
     const fetchRoom = async () => {
         try {
@@ -97,7 +82,6 @@ const StudyRoomView = () => {
             if (response.success) {
                 setRoom(response.data);
 
-                // Robust host check
                 const userId = user?._id || user?.id;
                 const hostId = response.data.host?._id || response.data.host;
                 const creatorId = response.data.createdBy?._id || response.data.createdBy;
@@ -225,103 +209,79 @@ const StudyRoomView = () => {
         return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
-    const getParticipantRole = (participantId) => {
-        const participant = room?.participants?.find(p => p.user?._id === participantId);
-        return participant?.role || 'participant';
-    };
-
     if (loading) {
         return (
-            <div className={clsx("min-h-screen flex items-center justify-center", isDark ? "bg-slate-900" : "bg-slate-50")}>
-                <Loader2 className={clsx("w-8 h-8 animate-spin", isDark ? "text-slate-400" : "text-slate-500")} />
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
             </div>
         );
     }
 
     return (
-        <div className={clsx("min-h-screen flex flex-col", isDark ? "bg-slate-900" : "bg-slate-50")}>
+        <div className="min-h-screen flex flex-col bg-black text-white font-sans h-screen overflow-hidden">
             {/* Header */}
-            <div className={clsx(
-                "flex items-center justify-between px-6 py-4 border-b",
-                isDark ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"
-            )}>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#1F1F1F] bg-[#0A0A0A]">
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => navigate('/study-rooms')}
-                        className={clsx(
-                            "p-2 rounded-lg transition-colors",
-                            isDark ? "hover:bg-slate-700 text-slate-400" : "hover:bg-slate-100 text-slate-500"
-                        )}
+                        className="p-2 rounded-lg hover:bg-[#141414] text-gray-400 hover:text-white transition-colors"
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </button>
                     <div>
                         <div className="flex items-center gap-2">
-                            <h1 className={clsx("text-lg font-bold", isDark ? "text-white" : "text-slate-900")}>
+                            <h1 className="text-lg font-bold text-white max-w-[200px] truncate">
                                 {room?.name}
                             </h1>
                             {isHost && (
-                                <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                                <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-500 uppercase tracking-wider border border-amber-500/20">
                                     <Crown className="w-3 h-3" />
                                     Host
                                 </span>
                             )}
                         </div>
                         <div className="flex items-center gap-2">
-                            <Circle className={clsx("w-2 h-2 fill-current", isConnected ? "text-emerald-500" : "text-red-500")} />
-                            <span className={clsx("text-xs", isDark ? "text-slate-400" : "text-slate-500")}>
-                                {isConnected ? 'Connected' : 'Connecting...'}
+                            <div className={`w-2 h-2 rounded-full ${isConnected ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-red-500"}`}></div>
+                            <span className="text-xs font-medium text-gray-500 uppercase tracking-widest">
+                                {isConnected ? 'Live' : 'Connecting...'}
                             </span>
                         </div>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                    {/* Meeting Info (for host) */}
                     {isHost && (
                         <button
                             onClick={() => setShowSettings(true)}
-                            className={clsx(
-                                "flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-colors",
-                                isDark ? "bg-slate-700 text-slate-300 hover:bg-slate-600" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                            )}
+                            className="p-2 rounded-lg bg-[#141414] hover:bg-[#1F1F1F] text-gray-400 hover:text-white transition-colors border border-[#1F1F1F]"
+                            title="Meeting Info"
                         >
                             <Settings className="w-4 h-4" />
-                            Meeting Info
                         </button>
                     )}
 
-                    {/* Participants count */}
-                    <div className={clsx(
-                        "flex items-center gap-2 px-3 py-1.5 rounded-lg",
-                        isDark ? "bg-slate-700" : "bg-slate-100"
-                    )}>
-                        <Users className={clsx("w-4 h-4", isDark ? "text-slate-400" : "text-slate-500")} />
-                        <span className={clsx("text-sm font-medium", isDark ? "text-slate-300" : "text-slate-600")}>
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#141414] border border-[#1F1F1F]">
+                        <Users className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm font-bold text-gray-300">
                             {participants.length}
                         </span>
                     </div>
 
-                    {/* Leave button */}
                     <button
                         onClick={handleLeaveRoom}
-                        className={clsx(
-                            "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors",
-                            isDark ? "bg-slate-700 text-slate-300 hover:bg-slate-600" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                        )}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#141414] hover:bg-red-500/10 border border-[#1F1F1F] hover:border-red-500/30 text-gray-400 hover:text-red-500 font-bold text-sm transition-all"
                     >
                         <LogOut className="w-4 h-4" />
                         Leave
                     </button>
 
-                    {/* Close room (host only) */}
                     {isHost && (
                         <button
                             onClick={handleCloseRoom}
-                            className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-500 rounded-lg font-medium hover:bg-red-500/20 transition-colors"
+                            className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 transition-colors"
+                            title="Close Room for Everyone"
                         >
                             <Trash2 className="w-4 h-4" />
-                            Close Room
                         </button>
                     )}
                 </div>
@@ -330,106 +290,94 @@ const StudyRoomView = () => {
             {/* Main Content */}
             <div className="flex-1 flex overflow-hidden">
                 {/* Sidebar - Participants */}
-                <div className={clsx(
-                    "w-64 border-r flex flex-col",
-                    isDark ? "bg-slate-800/50 border-slate-700" : "bg-white border-slate-200"
-                )}>
-                    <div className={clsx("px-4 py-3 border-b", isDark ? "border-slate-700" : "border-slate-200")}>
-                        <h3 className={clsx("text-sm font-semibold", isDark ? "text-slate-300" : "text-slate-700")}>
+                <div className="w-72 border-r border-[#1F1F1F] bg-[#0A0A0A] flex flex-col hidden md:flex">
+                    <div className="px-5 py-4 border-b border-[#1F1F1F]">
+                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
                             Participants ({participants.length})
                         </h3>
                     </div>
-                    <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                    <div className="flex-1 overflow-y-auto p-4 space-y-2">
                         {participants.map((p, idx) => (
                             <div
                                 key={p._id || idx}
-                                className={clsx(
-                                    "flex items-center gap-3 p-2 rounded-lg",
-                                    isDark ? "bg-slate-700/50" : "bg-slate-50"
-                                )}
+                                className="flex items-center gap-3 p-3 rounded-xl bg-[#141414] border border-[#1F1F1F] hover:border-orange-500/30 transition-colors group"
                             >
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white text-sm font-bold">
+                                <div className="w-8 h-8 rounded-lg bg-[#1F1F1F] group-hover:bg-orange-600/20 flex items-center justify-center text-white text-xs font-bold border border-[#2A2A2A] group-hover:border-orange-500/30 transition-colors">
                                     {p.name?.[0]?.toUpperCase() || '?'}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-1">
-                                        <p className={clsx("text-sm font-medium truncate", isDark ? "text-white" : "text-slate-900")}>
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-sm font-bold text-white truncate">
                                             {p.name}
                                         </p>
                                         {p.role === 'host' && (
                                             <Crown className="w-3 h-3 text-amber-500" />
                                         )}
                                     </div>
-                                    {p._id === user?._id && (
-                                        <span className={clsx("text-xs", isDark ? "text-slate-500" : "text-slate-400")}>(You)</span>
-                                    )}
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                                        <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">Online</span>
+                                    </div>
                                 </div>
-                                <Circle className="w-2 h-2 fill-emerald-500 text-emerald-500" />
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Chat / Whiteboard Area */}
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col bg-[#050505] relative">
                     {/* Tabs */}
-                    <div className={clsx("flex border-b", isDark ? "border-slate-700" : "border-slate-200")}>
+                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex p-1 bg-[#141414] border border-[#1F1F1F] rounded-xl shadow-xl">
                         <button
                             onClick={() => setActiveTab('chat')}
                             className={clsx(
-                                "flex items-center gap-2 px-6 py-3 font-medium transition-colors border-b-2",
+                                "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all",
                                 activeTab === 'chat'
-                                    ? "border-cyan-500 text-cyan-500"
-                                    : isDark
-                                        ? "border-transparent text-slate-400 hover:text-slate-200"
-                                        : "border-transparent text-slate-500 hover:text-slate-700"
+                                    ? "bg-orange-600 text-white shadow-lg shadow-orange-900/20"
+                                    : "text-gray-400 hover:text-white hover:bg-[#1F1F1F]"
                             )}
                         >
-                            <MessageSquare className="w-4 h-4" />
+                            <MessageSquare className="w-3 h-3" />
                             Chat
                         </button>
                         <button
                             onClick={() => setActiveTab('whiteboard')}
                             className={clsx(
-                                "flex items-center gap-2 px-6 py-3 font-medium transition-colors border-b-2",
+                                "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all",
                                 activeTab === 'whiteboard'
-                                    ? "border-cyan-500 text-cyan-500"
-                                    : isDark
-                                        ? "border-transparent text-slate-400 hover:text-slate-200"
-                                        : "border-transparent text-slate-500 hover:text-slate-700"
+                                    ? "bg-orange-600 text-white shadow-lg shadow-orange-900/20"
+                                    : "text-gray-400 hover:text-white hover:bg-[#1F1F1F]"
                             )}
                         >
-                            <Pencil className="w-4 h-4" />
-                            Whiteboard
+                            <Pencil className="w-3 h-3" />
+                            Board
                         </button>
                     </div>
 
                     {/* Chat Panel */}
                     {activeTab === 'chat' && (
-                        <div className="flex-1 flex flex-col">
-                            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                        <div className="flex-1 flex flex-col pt-16">
+                            <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-[#1F1F1F] scrollbar-track-transparent">
                                 {messages.map((msg, idx) => (
-                                    <div key={idx} className={msg.isSystem ? 'text-center' : ''}>
+                                    <div key={idx} className={msg.isSystem ? 'flex justify-center my-4' : ''}>
                                         {msg.isSystem ? (
-                                            <span className={clsx("text-xs px-3 py-1 rounded-full", isDark ? "bg-slate-700 text-slate-400" : "bg-slate-100 text-slate-500")}>
+                                            <span className="text-[10px] px-3 py-1 rounded-full bg-[#141414] border border-[#1F1F1F] text-gray-500 font-mono uppercase tracking-widest">
                                                 {msg.content}
                                             </span>
                                         ) : (
                                             <div className={clsx(
-                                                "max-w-[70%] p-3 rounded-2xl",
+                                                "max-w-[70%] p-4 rounded-2xl border transition-all",
                                                 msg.sender?._id === user?._id
-                                                    ? "ml-auto bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-br-md"
-                                                    : isDark
-                                                        ? "bg-slate-700 text-white rounded-bl-md"
-                                                        : "bg-slate-100 text-slate-900 rounded-bl-md"
+                                                    ? "ml-auto bg-orange-600/10 border-orange-600/20 text-white rounded-br-sm"
+                                                    : "bg-[#141414] border-[#1F1F1F] text-gray-200 rounded-bl-sm"
                                             )}>
                                                 {msg.sender?._id !== user?._id && (
-                                                    <p className={clsx("text-xs font-medium mb-1", msg.sender?._id === user?._id ? "text-white/80" : isDark ? "text-cyan-400" : "text-cyan-600")}>
+                                                    <p className="text-xs font-bold text-orange-500 mb-1">
                                                         {msg.sender?.name}
                                                     </p>
                                                 )}
-                                                <p className="text-sm">{msg.content}</p>
-                                                <p className={clsx("text-xs mt-1 text-right", msg.sender?._id === user?._id ? "text-white/60" : isDark ? "text-slate-500" : "text-slate-400")}>
+                                                <p className="text-sm leading-relaxed text-gray-300">{msg.content}</p>
+                                                <p className="text-[10px] mt-2 text-right text-gray-600 font-mono opacity-60">
                                                     {formatTime(msg.timestamp)}
                                                 </p>
                                             </div>
@@ -439,168 +387,105 @@ const StudyRoomView = () => {
                                 <div ref={messagesEndRef} />
                             </div>
 
-                            <form onSubmit={handleSendMessage} className={clsx("p-4 border-t", isDark ? "border-slate-700" : "border-slate-200")}>
-                                <div className="flex gap-3">
+                            <div className="p-4 bg-[#0A0A0A] border-t border-[#1F1F1F]">
+                                <form onSubmit={handleSendMessage} className="flex gap-2 max-w-4xl mx-auto">
                                     <input
                                         type="text"
                                         value={messageInput}
                                         onChange={(e) => setMessageInput(e.target.value)}
-                                        placeholder="Type a message..."
-                                        className={clsx(
-                                            "flex-1 px-4 py-3 rounded-xl border outline-none transition-colors",
-                                            isDark
-                                                ? "bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-cyan-500"
-                                                : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-cyan-500"
-                                        )}
+                                        placeholder="Type your message..."
+                                        className="flex-1 px-5 py-3 rounded-xl bg-[#141414] border border-[#1F1F1F] focus:border-orange-500/50 text-white placeholder-gray-600 outline-none transition-colors"
                                     />
                                     <button
                                         type="submit"
                                         disabled={!messageInput.trim()}
-                                        className="px-4 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="px-5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl transition-all disabled:opacity-50 disabled:grayscale flex items-center justify-center shadow-lg shadow-orange-900/20"
                                     >
                                         <Send className="w-5 h-5" />
                                     </button>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     )}
 
                     {/* Whiteboard Panel */}
                     {activeTab === 'whiteboard' && (
-                        <div className="flex-1 flex flex-col p-4">
-                            <div className="flex justify-end mb-3">
+                        <div className="flex-1 flex flex-col p-4 pt-16 relative">
+                            <div className="absolute top-4 right-4 z-20">
                                 <button
                                     onClick={handleClearCanvas}
-                                    className={clsx(
-                                        "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors",
-                                        isDark ? "bg-slate-700 text-slate-300 hover:bg-slate-600" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                                    )}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-[#141414] border border-[#1F1F1F] hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 text-gray-400 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors"
                                 >
-                                    <Trash2 className="w-4 h-4" />
-                                    Clear
+                                    <Trash2 className="w-3 h-3" />
+                                    Clear Board
                                 </button>
                             </div>
-                            <canvas
-                                ref={canvasRef}
-                                onMouseDown={startDrawing}
-                                onMouseMove={draw}
-                                onMouseUp={stopDrawing}
-                                onMouseLeave={stopDrawing}
-                                className={clsx(
-                                    "flex-1 rounded-xl border cursor-crosshair",
-                                    isDark ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"
-                                )}
-                            />
+                            <div className="flex-1 bg-[#0A0A0A] rounded-2xl border border-[#1F1F1F] overflow-hidden relative">
+                                <div className="absolute inset-0 bg-[radial-gradient(#1f1f1f_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none"></div>
+                                <canvas
+                                    ref={canvasRef}
+                                    onMouseDown={startDrawing}
+                                    onMouseMove={draw}
+                                    onMouseUp={stopDrawing}
+                                    onMouseLeave={stopDrawing}
+                                    className="w-full h-full cursor-crosshair touch-none"
+                                />
+                            </div>
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Meeting Info Modal (Host only) */}
-            {showSettings && isHost && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className={clsx(
-                        "w-full max-w-md rounded-2xl p-6",
-                        isDark ? "bg-slate-800" : "bg-white"
-                    )}>
-                        <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg">
-                                    <Key className="w-5 h-5 text-white" />
+            {/* Meeting Info Modal */}
+            <AnimatePresence>
+                {showSettings && isHost && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="w-full max-w-md bg-[#0A0A0A] border border-[#1F1F1F] rounded-2xl p-6 shadow-2xl"
+                        >
+                            <div className="flex items-center justify-between mb-8">
+                                <div className="flex items-center gap-3">
+                                    <Key className="w-5 h-5 text-orange-500" />
+                                    <h2 className="text-xl font-bold text-white">Meeting Details</h2>
                                 </div>
-                                <h2 className={clsx("text-xl font-bold", isDark ? "text-white" : "text-slate-900")}>
-                                    Meeting Details
-                                </h2>
-                            </div>
-                            <button
-                                onClick={() => setShowSettings(false)}
-                                className={clsx("p-2 rounded-lg transition-colors", isDark ? "hover:bg-slate-700" : "hover:bg-slate-100")}
-                            >
-                                <X className={clsx("w-5 h-5", isDark ? "text-slate-400" : "text-slate-500")} />
-                            </button>
-                        </div>
-
-                        <p className={clsx("text-sm mb-4", isDark ? "text-slate-400" : "text-slate-500")}>
-                            Share these details with participants to let them join your room.
-                        </p>
-
-                        <div className="space-y-4">
-                            <div className={clsx(
-                                "p-4 rounded-xl",
-                                isDark ? "bg-slate-700/50" : "bg-slate-100"
-                            )}>
-                                <div className="flex items-center justify-between mb-1">
-                                    <span className={clsx("text-xs font-medium", isDark ? "text-slate-400" : "text-slate-500")}>
-                                        Meeting ID
-                                    </span>
-                                    <button
-                                        onClick={() => handleCopy(room?.meetingId, 'meetingId')}
-                                        className={clsx(
-                                            "p-1.5 rounded-lg transition-colors",
-                                            isDark ? "hover:bg-slate-600" : "hover:bg-slate-200"
-                                        )}
-                                    >
-                                        {copiedField === 'meetingId' ? (
-                                            <Check className="w-4 h-4 text-emerald-500" />
-                                        ) : (
-                                            <Copy className={clsx("w-4 h-4", isDark ? "text-slate-400" : "text-slate-500")} />
-                                        )}
-                                    </button>
-                                </div>
-                                <p className={clsx("font-mono text-xl tracking-widest", isDark ? "text-white" : "text-slate-900")}>
-                                    {room?.meetingId}
-                                </p>
+                                <button onClick={() => setShowSettings(false)} className="p-2 bg-[#141414] hover:bg-[#1F1F1F] rounded-lg text-gray-400 hover:text-white transition-colors">
+                                    <X className="w-4 h-4" />
+                                </button>
                             </div>
 
-                            <div className={clsx(
-                                "p-4 rounded-xl",
-                                isDark ? "bg-slate-700/50" : "bg-slate-100"
-                            )}>
-                                <div className="flex items-center justify-between mb-1">
-                                    <span className={clsx("text-xs font-medium", isDark ? "text-slate-400" : "text-slate-500")}>
-                                        Password
-                                    </span>
-                                    <div className="flex items-center gap-1">
-                                        <button
-                                            onClick={handleRegeneratePassword}
-                                            className={clsx(
-                                                "p-1.5 rounded-lg transition-colors",
-                                                isDark ? "hover:bg-slate-600" : "hover:bg-slate-200"
-                                            )}
-                                            title="Regenerate password"
-                                        >
-                                            <RefreshCw className={clsx("w-4 h-4", isDark ? "text-slate-400" : "text-slate-500")} />
-                                        </button>
-                                        <button
-                                            onClick={() => handleCopy(room?.password, 'password')}
-                                            className={clsx(
-                                                "p-1.5 rounded-lg transition-colors",
-                                                isDark ? "hover:bg-slate-600" : "hover:bg-slate-200"
-                                            )}
-                                        >
-                                            {copiedField === 'password' ? (
-                                                <Check className="w-4 h-4 text-emerald-500" />
-                                            ) : (
-                                                <Copy className={clsx("w-4 h-4", isDark ? "text-slate-400" : "text-slate-500")} />
-                                            )}
+                            <div className="space-y-4">
+                                <div className="bg-[#141414] p-4 rounded-xl border border-[#1F1F1F] group">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Meeting ID</span>
+                                        <button onClick={() => handleCopy(room?.meetingId, 'meetingId')} className="text-gray-600 hover:text-white group-hover:block transition-colors">
+                                            {copiedField === 'meetingId' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
                                         </button>
                                     </div>
+                                    <p className="font-mono text-xl tracking-widest text-white">{room?.meetingId}</p>
                                 </div>
-                                <p className={clsx("font-mono text-xl tracking-widest", isDark ? "text-white" : "text-slate-900")}>
-                                    {room?.password}
-                                </p>
-                            </div>
-                        </div>
 
-                        <button
-                            onClick={() => setShowSettings(false)}
-                            className="w-full mt-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-700 transition-all"
-                        >
-                            Done
-                        </button>
+                                <div className="bg-[#141414] p-4 rounded-xl border border-[#1F1F1F] group">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Passcode</span>
+                                        <div className="flex gap-2">
+                                            <button onClick={handleRegeneratePassword} className="text-gray-600 hover:text-orange-500 transition-colors" title="Regenerate">
+                                                <RefreshCw className="w-3 h-3" />
+                                            </button>
+                                            <button onClick={() => handleCopy(room?.password, 'password')} className="text-gray-600 hover:text-white transition-colors">
+                                                {copiedField === 'password' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p className="font-mono text-xl tracking-widest text-white">{room?.password}</p>
+                                </div>
+                            </div>
+                        </motion.div>
                     </div>
-                </div>
-            )}
+                )}
+            </AnimatePresence>
         </div>
     );
 };

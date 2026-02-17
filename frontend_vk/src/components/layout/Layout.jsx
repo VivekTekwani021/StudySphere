@@ -7,30 +7,22 @@ import { clsx } from 'clsx';
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { isDark } = useTheme();
+  // Theme is always dark now
+  const isDark = true;
 
   return (
-    <div className={clsx(
-      "flex h-screen overflow-hidden transition-colors duration-200",
-      isDark ? "bg-slate-900" : "bg-gray-50"
-    )}>
+    <div className="flex h-screen overflow-hidden bg-black text-white">
       <Sidebar isOpen={sidebarOpen} toggleSidebar={() => setSidebarOpen(false)} />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Navbar toggleSidebar={() => setSidebarOpen(true)} />
 
-        <main className={clsx(
-          "flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 transition-colors duration-200",
-          isDark ? "bg-slate-900" : "bg-gray-50"
-        )}>
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 bg-black scroll-smooth">
           <Outlet />
 
-          {/* Watermark / Footer */}
-          <footer className={clsx(
-            "mt-8 py-6 text-center text-sm font-medium border-t",
-            isDark ? "text-slate-500 border-slate-800" : "text-slate-400 border-gray-200"
-          )}>
-            <p>© {new Date().getFullYear()} StudySphere. Created by <span className="text-indigo-500 font-bold">Vivek Tekwani</span>. All rights reserved.</p>
+          {/* Footer */}
+          <footer className="mt-12 py-8 text-center text-sm font-medium border-t border-[#1F1F1F] text-gray-600">
+            <p>© {new Date().getFullYear()} StudySphere. Created by <span className="text-orange-500 font-bold hover:text-orange-400 transition-colors cursor-default">Vivek and Aayush</span>. All rights reserved.</p>
           </footer>
         </main>
       </div>

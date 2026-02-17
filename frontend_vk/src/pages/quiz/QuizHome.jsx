@@ -2,24 +2,24 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Brain, Sparkles, Target, Trophy, Clock, Zap,
-  CircleHelp, ArrowRight, Loader2, CheckCircle2
+  Brain, Sparkles, Trophy, Clock, Zap,
+  CircleHelp, ArrowRight, Loader2, Target
 } from "lucide-react";
 import { quizApi } from "../../api/quizApi";
-import { useTheme } from "../../context/ThemeContext";
+import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
-import { clsx } from "clsx";
 
 const features = [
   { icon: Brain, title: "AI-Generated", desc: "Smart questions tailored to your topic" },
   { icon: Clock, title: "10 Questions", desc: "Complete quiz in under 10 minutes" },
   { icon: Trophy, title: "Track Mastery", desc: "Know your Strong & Weak areas" },
+  { icon: Target, title: "Adaptive", desc: "Questions match your skill level" }
 ];
 
 const difficulties = [
-  { id: "easy", label: "Easy", desc: "Basic concepts, fundamentals", color: "emerald", icon: "🌱" },
-  { id: "medium", label: "Medium", desc: "Intermediate level, applications", color: "amber", icon: "⚡" },
-  { id: "hard", label: "Hard", desc: "Advanced, interview-level", color: "rose", icon: "🔥" },
+  { id: "easy", label: "Easy", desc: "Fundamentals", icon: "🌱" },
+  { id: "medium", label: "Medium", desc: "Intermediate", icon: "⚡" },
+  { id: "hard", label: "Hard", desc: "Advanced", icon: "🔥" },
 ];
 
 const suggestedTopics = [
@@ -27,29 +27,12 @@ const suggestedTopics = [
   "Recursion", "Dynamic Programming", "REST API", "System Design"
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring", stiffness: 100, damping: 15 }
-  },
-};
-
 const QuizHome = () => {
   const [topic, setTopic] = useState("");
   const [difficulty, setDifficulty] = useState("medium");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { isDark } = useTheme();
+  const { user } = useAuth(); // Assuming we might want user name etc.
 
   const handleStartQuiz = async () => {
     if (!topic.trim()) {
@@ -73,247 +56,170 @@ const QuizHome = () => {
   };
 
   return (
-    <div className={clsx(
-      "min-h-screen p-6 md:p-10 transition-colors duration-200",
-      isDark
-        ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
-        : "bg-gradient-to-br from-indigo-50 via-white to-violet-50"
-    )}>
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="max-w-4xl mx-auto"
-      >
-        {/* Header */}
-        <motion.div variants={itemVariants} className="mb-10">
-          <div className="flex items-center gap-3 mb-4">
-            <motion.div
-              animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="p-3 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl shadow-lg shadow-indigo-500/30"
-            >
-              <Brain className="w-6 h-6 text-white" />
-            </motion.div>
-            <span className={clsx(
-              "text-sm font-medium px-3 py-1 rounded-full",
-              isDark ? "text-indigo-400 bg-indigo-900/30" : "text-indigo-600 bg-indigo-50"
-            )}>
-              Knowledge Check
-            </span>
+    <div className="min-h-screen bg-black text-white p-6 md:p-10 font-sans">
+
+      {/* Header Section */}
+      <div className="max-w-5xl mx-auto mb-12">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-[#141414] border border-[#1F1F1F] rounded-lg">
+                <Brain className="w-5 h-5 text-orange-500" />
+              </div>
+              <span className="text-xs font-medium text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-full border border-orange-500/20">
+                AI Powered
+              </span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-2">
+              Quiz Challenge
+            </h1>
+            <p className="text-gray-400 max-w-xl">
+              Test your knowledge with AI-generated quizzes. Select a topic, choose your difficulty, and challenge yourself.
+            </p>
           </div>
 
-          <h1 className={clsx("text-3xl md:text-4xl font-bold mb-3", isDark ? "text-white" : "text-slate-900")}>
-            Quiz Challenge
-          </h1>
-          <p className={clsx("max-w-2xl", isDark ? "text-slate-400" : "text-slate-600")}>
-            Test your knowledge with AI-generated quizzes. Get 10 MCQs based on your topic and
-            difficulty level, then see how you score!
-          </p>
-        </motion.div>
+          <div className="flex gap-3">
+            {/* Stats or history button could go here */}
+          </div>
+        </div>
 
-        {/* Features Row */}
-        <motion.div
-          variants={itemVariants}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10"
-        >
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              whileHover={{ y: -4, scale: 1.02 }}
-              className={clsx(
-                "rounded-xl p-4 border shadow-sm hover:shadow-md transition-shadow flex items-start gap-3",
-                isDark ? "bg-slate-800 border-slate-700" : "bg-white border-indigo-100"
-              )}
-            >
-              <div className={clsx("p-2 rounded-lg", isDark ? "bg-indigo-900/30" : "bg-indigo-100")}>
-                <feature.icon className={clsx("w-5 h-5", isDark ? "text-indigo-400" : "text-indigo-600")} />
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+          {/* Left Column: Configuration (8 cols) */}
+          <div className="lg:col-span-8 space-y-8">
+
+            {/* Topic Input Card */}
+            <div className="bg-[#0A0A0A] border border-[#1F1F1F] rounded-2xl p-8">
+              <div className="mb-8">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  What do you want to learn? <span className="text-orange-500">*</span>
+                </label>
+                <div className="relative group">
+                  <CircleHelp className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
+                  <input
+                    type="text"
+                    placeholder="Enter topic (e.g., React Hooks, System Design...)"
+                    value={topic}
+                    onChange={(e) => setTopic(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className="w-full pl-12 pr-4 py-4 bg-[#141414] border border-[#1F1F1F] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all font-medium"
+                  />
+                </div>
               </div>
+
+              {/* Suggestions */}
+              <div className="mb-8">
+                <label className="block text-xs font-medium text-gray-500 mb-3 uppercase tracking-wider">
+                  Popular Topics
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {suggestedTopics.map((t, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setTopic(t)}
+                      className={`px-4 py-2 text-sm rounded-lg border transition-all ${topic === t
+                          ? 'bg-orange-600 text-white border-orange-600'
+                          : 'bg-[#141414] text-gray-400 border-[#1F1F1F] hover:border-gray-600 hover:text-white'
+                        }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Difficulty */}
               <div>
-                <h3 className={clsx("font-semibold text-sm", isDark ? "text-white" : "text-slate-900")}>{feature.title}</h3>
-                <p className={clsx("text-xs", isDark ? "text-slate-400" : "text-slate-500")}>{feature.desc}</p>
+                <label className="block text-xs font-medium text-gray-500 mb-3 uppercase tracking-wider">
+                  Difficulty Level
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {difficulties.map((diff) => (
+                    <button
+                      key={diff.id}
+                      onClick={() => setDifficulty(diff.id)}
+                      className={`relative p-4 rounded-xl border transition-all text-left group ${difficulty === diff.id
+                          ? 'bg-[#141414] border-orange-500 ring-1 ring-orange-500/20'
+                          : 'bg-[#141414] border-[#1F1F1F] hover:border-gray-600'
+                        }`}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-lg">{diff.icon}</span>
+                        <span className={`font-semibold ${difficulty === diff.id ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
+                          {diff.label}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 pl-8">{diff.desc}</p>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Main Card */}
-        <motion.div
-          variants={itemVariants}
-          className={clsx(
-            "rounded-2xl p-6 md:p-8 border shadow-lg",
-            isDark ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"
-          )}
-        >
-          {/* Topic Input */}
-          <div className="mb-6">
-            <label className={clsx("block text-sm font-medium mb-2", isDark ? "text-slate-300" : "text-slate-700")}>
-              Quiz Topic <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <CircleHelp className={clsx("absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5", isDark ? "text-slate-500" : "text-slate-400")} />
-              <input
-                type="text"
-                placeholder="Enter topic (e.g., Binary Search, React Hooks...)"
-                value={topic}
-                onChange={(e) => setTopic(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className={clsx(
-                  "w-full pl-12 pr-4 py-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all",
-                  isDark
-                    ? "bg-slate-700 border-slate-600 text-white placeholder-slate-400"
-                    : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400"
-                )}
-              />
             </div>
+
+            {/* Start Action */}
+            <button
+              onClick={handleStartQuiz}
+              disabled={loading}
+              className="w-full py-4 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-orange-900/20"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Generating Questions...
+                </>
+              ) : (
+                <>
+                  <Zap className="w-5 h-5" />
+                  Start AI Quiz
+                  <ArrowRight className="w-5 h-5" />
+                </>
+              )}
+            </button>
+
           </div>
 
-          {/* Quick Topic Suggestions */}
-          <div className="mb-6">
-            <label className={clsx("block text-sm font-medium mb-2", isDark ? "text-slate-300" : "text-slate-700")}>
-              Quick Picks
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {suggestedTopics.map((t, index) => (
-                <motion.button
-                  key={index}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setTopic(t)}
-                  className={clsx(
-                    "px-3 py-1.5 text-sm rounded-full border transition-all",
-                    topic === t
-                      ? 'bg-indigo-500 text-white border-indigo-500'
-                      : isDark
-                        ? 'bg-slate-700 text-slate-300 border-slate-600 hover:border-indigo-400 hover:text-indigo-400'
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300 hover:text-indigo-600'
-                  )}
-                >
-                  {t}
-                </motion.button>
-              ))}
-            </div>
-          </div>
+          {/* Right Column: Features Info (4 cols) */}
+          <div className="lg:col-span-4 space-y-6">
 
-          {/* Difficulty Selection */}
-          <div className="mb-8">
-            <label className={clsx("block text-sm font-medium mb-3", isDark ? "text-slate-300" : "text-slate-700")}>
-              Difficulty Level
-            </label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {difficulties.map((diff) => (
-                <motion.button
-                  key={diff.id}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setDifficulty(diff.id)}
-                  className={clsx(
-                    "relative p-4 rounded-xl border-2 transition-all text-left",
-                    difficulty === diff.id
-                      ? diff.color === 'emerald'
-                        ? isDark ? 'border-emerald-500 bg-emerald-900/30' : 'border-emerald-500 bg-emerald-50'
-                        : diff.color === 'amber'
-                          ? isDark ? 'border-amber-500 bg-amber-900/30' : 'border-amber-500 bg-amber-50'
-                          : isDark ? 'border-rose-500 bg-rose-900/30' : 'border-rose-500 bg-rose-50'
-                      : isDark ? 'border-slate-600 bg-slate-700 hover:border-slate-500' : 'border-slate-200 bg-white hover:border-slate-300'
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{diff.icon}</span>
+            {/* Info Card */}
+            <div className="bg-[#141414] border border-[#1F1F1F] rounded-2xl p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-orange-500/10 rounded-lg">
+                  <Sparkles className="w-5 h-5 text-orange-500" />
+                </div>
+                <h3 className="font-semibold text-white">Why take this quiz?</h3>
+              </div>
+
+              <div className="space-y-6">
+                {features.map((feature, idx) => (
+                  <div key={idx} className="flex gap-4">
+                    <div className="mt-1">
+                      <feature.icon className="w-5 h-5 text-gray-500" />
+                    </div>
                     <div>
-                      <h4 className={clsx("font-semibold", isDark ? "text-white" : "text-slate-900")}>{diff.label}</h4>
-                      <p className={clsx("text-xs", isDark ? "text-slate-400" : "text-slate-500")}>{diff.desc}</p>
+                      <h4 className="text-sm font-medium text-white mb-0.5">{feature.title}</h4>
+                      <p className="text-xs text-gray-500 leading-relaxed">{feature.desc}</p>
                     </div>
                   </div>
-                  {difficulty === diff.id && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute top-2 right-2"
-                    >
-                      <CheckCircle2 className={`w-5 h-5 ${diff.color === 'emerald' ? 'text-emerald-500' :
-                        diff.color === 'amber' ? 'text-amber-500' : 'text-rose-500'
-                        }`} />
-                    </motion.div>
-                  )}
-                </motion.button>
-              ))}
+                ))}
+              </div>
             </div>
+
+            {/* Hint Box */}
+            <div className="bg-gradient-to-br from-[#141414] to-black border border-[#1F1F1F] rounded-2xl p-6 relative overflow-hidden">
+              <div className="relative z-10">
+                <h4 className="text-white font-medium mb-2">Pro Tip</h4>
+                <p className="text-sm text-gray-500">
+                  Detailed explanations are provided for every wrong answer. Use them to create new study notes!
+                </p>
+              </div>
+              {/* Decorative orb */}
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-orange-500/5 rounded-full blur-2xl"></div>
+            </div>
+
           </div>
-
-          {/* Start Button */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleStartQuiz}
-            disabled={loading}
-            className="w-full py-4 bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            <AnimatePresence mode="wait">
-              {loading ? (
-                <motion.div
-                  key="loading"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex items-center gap-2"
-                >
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  >
-                    <Loader2 className="w-5 h-5" />
-                  </motion.div>
-                  Generating Quiz...
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="start"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex items-center gap-2"
-                >
-                  <Zap className="w-5 h-5" />
-                  Start Quiz
-                  <ArrowRight className="w-5 h-5" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.button>
-        </motion.div>
-
-        {/* Info Banner */}
-        <motion.div
-          variants={itemVariants}
-          className="mt-8 bg-gradient-to-r from-indigo-500 to-violet-600 rounded-2xl p-6 text-white"
-        >
-          <div className="flex items-start gap-4">
-            <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
-              <Sparkles className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg mb-1">How it works</h3>
-              <p className="text-indigo-100 text-sm">
-                Our AI generates 10 unique MCQ questions based on your topic and difficulty.
-                After completing the quiz, you'll see your score, accuracy, and mastery status
-                (Strong, Average, or Weak). Wrong answers include detailed explanations!
-              </p>
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
-
-      {/* Background Decoration */}
-      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className={clsx(
-          "absolute top-20 right-20 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl animate-pulse",
-          isDark ? "bg-indigo-900/30 opacity-50" : "bg-indigo-200 opacity-30"
-        )} />
-        <div className={clsx(
-          "absolute bottom-20 left-20 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl animate-pulse",
-          isDark ? "bg-violet-900/30 opacity-50" : "bg-violet-200 opacity-30"
-        )} style={{ animationDelay: '1s' }} />
+        </div>
       </div>
     </div>
   );
