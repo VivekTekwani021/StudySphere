@@ -3,13 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { onboardingApi } from '../../api/auth.api';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
-import Card, { CardContent, CardHeader, CardTitle } from '../../components/common/Card';
-import { School, BookOpen, CheckCircle } from 'lucide-react';
+import { School, BookOpen, CheckCircle, GraduationCap, ChevronRight, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
 
 const Onboarding = () => {
   const [educationLevel, setEducationLevel] = useState(''); // 'School' or 'College'
-  // Could add more fields like 'preferences' if needed
   const { updateUser } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -25,12 +24,9 @@ const Onboarding = () => {
       const response = await onboardingApi.complete({ educationLevel });
       if (response.success) {
         toast.success('Setup complete!');
-        // Update user context if backend returns updated user, or we manually update local state
-        // Assuming backend might return updated user in data
         if (response.data && response.data.user) {
           updateUser(response.data.user);
         } else {
-          // Manually update
           updateUser({ educationLevel, isOnboarded: true });
         }
         navigate('/dashboard');
@@ -45,64 +41,159 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl shadow-xl">
-        <CardHeader className="text-center border-none">
-          <CardTitle className="text-3xl font-bold text-gray-900">Let's personalize your experience</CardTitle>
-          <p className="text-gray-500 mt-2">Tell us a bit about your current education status.</p>
-        </CardHeader>
-        <CardContent className="space-y-8">
+    <div className="min-h-screen bg-black flex items-center justify-center p-6 font-sans relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent"></div>
+      <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-orange-900/10 to-transparent"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-orange-600/5 rounded-full blur-[100px] pointer-events-none"></div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* School Option */}
-            <div
-              className={`cursor-pointer p-6 rounded-xl border-2 transition-all ${educationLevel === 'School' ? 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200' : 'border-gray-200 hover:border-indigo-300 hover:shadow-md'}`}
-              onClick={() => setEducationLevel('School')}
-            >
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className={`p-4 rounded-full ${educationLevel === 'School' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-500'}`}>
-                  <School size={32} />
+      <div className="w-full max-w-4xl relative z-10">
+
+        {/* Header */}
+        <div className="text-center mb-12 space-y-4">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500 text-sm font-medium mb-2"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Welcome to StudySphere</span>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-4xl md:text-5xl font-bold text-white tracking-tight"
+          >
+            Let's personalize your experience
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-lg text-gray-400 max-w-2xl mx-auto"
+          >
+            Tell us a bit about your current education status so we can tailor the platform for you.
+          </motion.p>
+        </div>
+
+        {/* Selection Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+
+          {/* School Option */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            whileHover={{ scale: 1.02, borderColor: 'rgba(249, 115, 22, 0.4)' }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setEducationLevel('School')}
+            className={`cursor-pointer group relative p-8 rounded-3xl border-2 transition-all duration-300 ${educationLevel === 'School'
+                ? 'bg-[#141414] border-orange-500 shadow-2xl shadow-orange-900/20'
+                : 'bg-[#0A0A0A] border-[#1F1F1F] hover:bg-[#141414]'
+              }`}
+          >
+            <div className="flex flex-col h-full">
+              <div className="flex justify-between items-start mb-6">
+                <div className={`p-4 rounded-2xl transition-colors ${educationLevel === 'School' ? 'bg-orange-500 text-white' : 'bg-[#1F1F1F] text-gray-400 group-hover:text-white'
+                  }`}>
+                  <School size={32} strokeWidth={1.5} />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-lg text-gray-900">School Student</h3>
-                  <p className="text-sm text-gray-500 mt-1">For students in K-12. Track daily attendance and basic subjects.</p>
-                </div>
-                {educationLevel === 'School' && <CheckCircle className="text-indigo-600 animate-in fade-in zoom-in" size={24} />}
+                {educationLevel === 'School' && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="bg-orange-500 rounded-full p-1"
+                  >
+                    <CheckCircle className="text-white w-5 h-5" />
+                  </motion.div>
+                )}
+              </div>
+
+              <div className="space-y-3 mt-auto">
+                <h3 className={`text-2xl font-bold transition-colors ${educationLevel === 'School' ? 'text-white' : 'text-gray-200 group-hover:text-white'
+                  }`}>
+                  School Student
+                </h3>
+                <p className="text-gray-500 leading-relaxed">
+                  For students in K-12. Track daily attendance, manage homework, and master basic subjects.
+                </p>
               </div>
             </div>
+          </motion.div>
 
-            {/* College Option */}
-            <div
-              className={`cursor-pointer p-6 rounded-xl border-2 transition-all ${educationLevel === 'College' ? 'border-purple-500 bg-purple-50 ring-2 ring-purple-200' : 'border-gray-200 hover:border-purple-300 hover:shadow-md'}`}
-              onClick={() => setEducationLevel('College')}
-            >
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className={`p-4 rounded-full ${educationLevel === 'College' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-500'}`}>
-                  <BookOpen size={32} />
+          {/* College Option */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            whileHover={{ scale: 1.02, borderColor: 'rgba(249, 115, 22, 0.4)' }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setEducationLevel('College')}
+            className={`cursor-pointer group relative p-8 rounded-3xl border-2 transition-all duration-300 ${educationLevel === 'College'
+                ? 'bg-[#141414] border-orange-500 shadow-2xl shadow-orange-900/20'
+                : 'bg-[#0A0A0A] border-[#1F1F1F] hover:bg-[#141414]'
+              }`}
+          >
+            <div className="flex flex-col h-full">
+              <div className="flex justify-between items-start mb-6">
+                <div className={`p-4 rounded-2xl transition-colors ${educationLevel === 'College' ? 'bg-orange-500 text-white' : 'bg-[#1F1F1F] text-gray-400 group-hover:text-white'
+                  }`}>
+                  <GraduationCap size={32} strokeWidth={1.5} />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-lg text-gray-900">College Student</h3>
-                  <p className="text-sm text-gray-500 mt-1">For university students. Track subject-wise attendance and advanced topics.</p>
-                </div>
-                {educationLevel === 'College' && <CheckCircle className="text-purple-600 animate-in fade-in zoom-in" size={24} />}
+                {educationLevel === 'College' && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="bg-orange-500 rounded-full p-1"
+                  >
+                    <CheckCircle className="text-white w-5 h-5" />
+                  </motion.div>
+                )}
+              </div>
+
+              <div className="space-y-3 mt-auto">
+                <h3 className={`text-2xl font-bold transition-colors ${educationLevel === 'College' ? 'text-white' : 'text-gray-200 group-hover:text-white'
+                  }`}>
+                  College Student
+                </h3>
+                <p className="text-gray-500 leading-relaxed">
+                  For university students. Track subject-wise attendance, assignments, and advanced topics.
+                </p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="flex justify-end pt-4">
-            <Button
-              size="lg"
-              onClick={handleComplete}
-              isLoading={loading}
-              className="w-full md:w-auto"
-              disabled={!educationLevel}
-            >
-              Get Started
-            </Button>
-          </div>
+        </div>
 
-        </CardContent>
-      </Card>
+        {/* Action Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="flex justify-center"
+        >
+          <Button
+            size="lg"
+            onClick={handleComplete}
+            isLoading={loading}
+            className={`
+              w-full md:w-auto min-w-[200px] h-14 text-lg font-bold rounded-xl
+              bg-orange-600 hover:bg-orange-500 text-white shadow-xl shadow-orange-900/20
+              disabled:opacity-50 disabled:cursor-not-allowed transition-all
+              flex items-center justify-center gap-2
+            `}
+            disabled={!educationLevel}
+          >
+            Get Started
+            <ChevronRight className="w-5 h-5" />
+          </Button>
+        </motion.div>
+
+      </div>
     </div>
   );
 };
